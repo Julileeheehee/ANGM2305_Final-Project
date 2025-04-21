@@ -42,6 +42,7 @@ class Tile:
         return collapsed
     
     def getEntropy(self):
+        self.entropy = len(self.possibilities)
         return self.entropy
     
     def setInitialTile(self, tileType):
@@ -51,6 +52,10 @@ class Tile:
     
     def getIndex(self):
         return self.index
+    
+    def updatePossibilities(self, listofPossibilities):
+        self.possibilities = listofPossibilities
+    
         
 
 class Cell:
@@ -106,6 +111,15 @@ class Cell:
     
     def getIndex(self):
         return self.tile.getIndex()
+    
+    def getNeighborEntropy(self):
+        #first get neighbor
+        #get the edges of self tile
+        #get edges of neighbor tile (opposite direction)
+        #Remove possibilities of neighbor
+        #Get position of neighbor for the grid
+        #Call the getEntropy() method on the neighbor
+        pass
 
 
     
