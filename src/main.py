@@ -1,6 +1,6 @@
 import pygame
 import random
-import sys
+#import sys
 
 from settings import *
 
@@ -17,6 +17,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+        screen.fill(GRAY)
+        pygame.display.flip()
+
     pygame.quit()
 
 
