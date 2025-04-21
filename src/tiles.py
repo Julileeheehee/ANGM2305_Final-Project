@@ -40,6 +40,9 @@ class Tile:
         if self.entropy == 1:
             collapsed = True
         return collapsed
+    
+    def getEntropy(self):
+        return self.entropy
 
 class Cell:
     def __init__(self, x, y):
@@ -82,9 +85,12 @@ class Cell:
         listofneighbors = [north, east, south, west]
         return listofneighbors
     
-    def makeTile(self):
+    def isCollapsed(self):
         collapsed = self.tile.isCollapsed()
         return collapsed
+    
+    def getEntropy(self):
+        return self.tile.getEntropy()
 
 
     
@@ -155,10 +161,10 @@ def main():
         pygame.Surface.blit(screen, tileImages[0], (0, 0))
         grid[0][0] = ""
 
-        print("[0][0] entropy: ")
-        print("[0][1] entropy: ")
-        print("[1][0] entropy: ")
-        print("[1][1] entropy: ")
+        #print("[0][0] entropy: ")
+        #print("[0][1] entropy: ")
+        #print("[1][0] entropy: ")
+        #print("[1][1] entropy: ")
 
 
 
