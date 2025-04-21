@@ -34,6 +34,12 @@ class Tile:
         self.neighbors = listofneighbors # ex: [1,0,1,1]
         self.possibilities = [WATER_TILE, COASTLINE_TILE, GRASS_TILE]
         self.entropy = len(self.possibilities) #should be 3 at the start
+    
+    def isCollapsed(self):
+        collapsed = False
+        if self.entropy == 1:
+            collapsed = True
+        return collapsed
 
 class Cell:
     def __init__(self, x, y):
@@ -41,6 +47,9 @@ class Cell:
         self.col = y
         self.gridcopy = [[0 for row in range(GRID_X)] for col in range(GRID_Y)]
         self.gridlocation = self.gridcopy[self.row][self.col]
+
+        neighbors = self.getNeighbors()
+        self.tile = Tile(neighbors)
 
     def getNeighbors(self):
         listofneighbors = []
@@ -74,8 +83,8 @@ class Cell:
         return listofneighbors
     
     def makeTile(self):
-        neighbors = self.getNeighbors()
-        tile = Tile(neighbors)
+        collapsed = self.tile.isCollapsed()
+        return collapsed
 
 
     
