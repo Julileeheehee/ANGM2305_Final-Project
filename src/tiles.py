@@ -47,6 +47,7 @@ class Tile:
     def setInitialTile(self, tileType):
         self.index = tileType
         self.possibilities = [tileType]
+        self.entropy = 1
     
     def getIndex(self):
         return self.index
@@ -135,6 +136,11 @@ class Cell:
 
 
 
+def displayEntropy(font, grid, screen):
+    for y in range(GRID_Y):
+        for x in range(GRID_X):
+            text = (pygame.font.Font.render(font, str(grid[x][y].getEntropy()), True, (255,255,255)))
+            pygame.Surface.blit(screen, text, ((x*TILESIZE * SCALE), y*TILESIZE * SCALE)) 
 
 
 
@@ -146,15 +152,17 @@ def loadImages():
     ]
     return tileImages
 
+
 def main():
     pygame.init()
     pygame.display.set_caption("3 Tile Test")
     tilesize = TILESIZE * SCALE
     screen = pygame.display.set_mode((GRID_X * tilesize, GRID_X * tilesize))
+
     clock = pygame.time.Clock()
     tileImages = loadImages()
     blank_tile = pygame.transform.scale((pygame.image.load('images/3-tiles/blank_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE))
-
+    font = pygame.font.Font(None, TILESIZE)
     collapsed = False
     running = True
 
@@ -170,20 +178,29 @@ def main():
         for i in range(len(grid)):
             for j in range(len(grid[i])):
                 grid[i][j] = Cell(i, j)
+                #entropyNum = grid[i][j].getEntropy()
+                #print(entropyNum)
                 pygame.Surface.blit(screen, blank_tile, (i*tilesize, j*tilesize))
+                #text = (pygame.font.Font.render(font, entropyNum, True, (255,255,255))).get_rect()
+                #pygame.Surface.blit(screen, text, (i*tilesize, j*tilesize))
+
         
         # Forces the top left corner to be a water tile
         grid[0][0].setInitialTile(WATER_TILE)
         pygame.Surface.blit(screen, tileImages[grid[0][0].getIndex()], (0, 0))
+        #print(type(grid[0][0].getEntropy()))
+
+        displayEntropy(font, grid, screen)
+        
 
         #entropy = grid[0][0].getEntropy()
         #print(entropy)
 
 
-        #print("[0][0] entropy: ")
-        #print("[0][1] entropy: ")
-        #print("[1][0] entropy: ")
-        #print("[1][1] entropy: ")
+        #print(f"[0][0] entropy: {grid[0][0].getEntropy()}")
+        #print(f"[0][1] entropy: {grid[0][1].getEntropy()}")
+        #print(f"[1][0] entropy: {grid[1][0].getEntropy()}")
+        #print(f"[1][1] entropy: {grid[1][1].getEntropy()}")
 
 
 
