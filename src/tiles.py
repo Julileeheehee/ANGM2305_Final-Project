@@ -15,8 +15,8 @@ GRASS_TILE = 2
 def loadImages():
     tiles = [
         pygame.transform.scale((pygame.image.load('images/3-tiles/water_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE)),
-        pygame.image.load('images/3-tiles/coastline_tile.png').convert_alpha(),
-        pygame.image.load('images/3-tiles/grass_tile.png').convert_alpha(),
+        pygame.transform.scale((pygame.image.load('images/3-tiles/coastline_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE)),
+        pygame.transform.scale((pygame.image.load('images/3-tiles/grass_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE)),
     ]
     return tiles
 
@@ -47,7 +47,7 @@ def main():
         #---------------add code below---------------
         for row in range(GRID_X):
             for col in range(GRID_Y):
-                pygame.Surface.blit(screen, tiles[0], (row*tilesize, col*tilesize))
+                pygame.Surface.blit(screen, tiles[2], (row*tilesize, col*tilesize))
 
 
 
