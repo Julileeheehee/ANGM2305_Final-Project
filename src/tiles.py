@@ -8,15 +8,17 @@ TILESIZE = 64 # I made my tiles 64x64. Not sure why lmao
 SCALE = 3
 
 # Tile types w/ index
-WATER_TILE = 0
-COASTLINE_TILE = 1
-GRASS_TILE = 2
+BLANK_TILE = 0
+WATER_TILE = 1
+COASTLINE_TILE = 2
+GRASS_TILE = 3
 
 def loadImages():
     tiles = [
+        pygame.transform.scale((pygame.image.load('images/3-tiles/blank_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE)),
         pygame.transform.scale((pygame.image.load('images/3-tiles/water_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE)),
         pygame.transform.scale((pygame.image.load('images/3-tiles/coastline_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE)),
-        pygame.transform.scale((pygame.image.load('images/3-tiles/grass_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE)),
+        pygame.transform.scale((pygame.image.load('images/3-tiles/grass_tile.png').convert_alpha()), (SCALE*TILESIZE, SCALE*TILESIZE))
     ]
     return tiles
 
@@ -45,9 +47,13 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         #---------------add code below---------------
-        for row in range(GRID_X):
-            for col in range(GRID_Y):
-                pygame.Surface.blit(screen, tiles[2], (row*tilesize, col*tilesize))
+
+        #initializes a 2x2 grid??????
+        grid = [[0 for row in range(GRID_X)] for col in range(GRID_Y)]
+        
+        for j in range(GRID_Y):
+            for i in range(GRID_X):
+                pygame.Surface.blit(screen, tiles[BLANK_TILE], (i*tilesize, j*tilesize))
 
 
 
