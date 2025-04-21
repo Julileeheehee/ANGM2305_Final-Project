@@ -43,6 +43,14 @@ class Tile:
     
     def getEntropy(self):
         return self.entropy
+    
+    def setInitialTile(self, tileType):
+        self.index = tileType
+        self.possibilities = [tileType]
+    
+    def getIndex(self):
+        return self.index
+        
 
 class Cell:
     def __init__(self, x, y):
@@ -91,6 +99,12 @@ class Cell:
     
     def getEntropy(self):
         return self.tile.getEntropy()
+    
+    def setInitialTile(self, tileType):
+        self.tile.setInitialTile(tileType)
+    
+    def getIndex(self):
+        return self.tile.getIndex()
 
 
     
@@ -159,9 +173,11 @@ def main():
                 pygame.Surface.blit(screen, blank_tile, (i*tilesize, j*tilesize))
         
         # Forces the top left corner to be a water tile
-        pygame.Surface.blit(screen, tileImages[0], (0, 0))
-        entropy = grid[0][0].getEntropy()
-        print(entropy)
+        grid[0][0].setInitialTile(WATER_TILE)
+        pygame.Surface.blit(screen, tileImages[grid[0][0].getIndex()], (0, 0))
+
+        #entropy = grid[0][0].getEntropy()
+        #print(entropy)
 
 
         #print("[0][0] entropy: ")
