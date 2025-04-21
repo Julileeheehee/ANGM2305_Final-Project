@@ -6,6 +6,17 @@ import pygame
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
+# grid/panel sizes
+
+# TODO: Make these numbers adjustable
+GRID_WIDTH = 400
+GRID_HEIGHT = 400
+
+PANEL_WIDTH = 250
+PANEL_HEIGHT = 400
+
+PADDING = 50
+
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
