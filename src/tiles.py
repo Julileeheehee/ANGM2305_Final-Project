@@ -155,11 +155,14 @@ def main():
         
         for i in range(len(grid)):
             for j in range(len(grid[i])):
+                grid[i][j] = Cell(i, j)
                 pygame.Surface.blit(screen, blank_tile, (i*tilesize, j*tilesize))
         
         # Forces the top left corner to be a water tile
         pygame.Surface.blit(screen, tileImages[0], (0, 0))
-        grid[0][0] = ""
+        entropy = grid[0][0].getEntropy()
+        print(entropy)
+
 
         #print("[0][0] entropy: ")
         #print("[0][1] entropy: ")
