@@ -51,9 +51,12 @@ def main():
         #initializes a 2x2 grid??????
         grid = [[0 for row in range(GRID_X)] for col in range(GRID_Y)]
         
-        for j in range(GRID_Y):
-            for i in range(GRID_X):
-                pygame.Surface.blit(screen, tiles[BLANK_TILE], (i*tilesize, j*tilesize))
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                if i == 1:
+                    pygame.Surface.blit(screen, tiles[BLANK_TILE], (i*tilesize, j*tilesize))
+                else:
+                    pygame.Surface.blit(screen, tiles[GRASS_TILE], (i*tilesize, j*tilesize))
 
 
 
