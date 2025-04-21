@@ -28,14 +28,58 @@ tileEdges = {
 }
 
 #---------------------------Classes (will move later)-----------------------------------------
-class Tiles:
-    def __init__(self, tileIndex, x, y):
-        self.index = tileIndex
-        self.gridcopy = [[0 for row in range(GRID_X)] for col in range(GRID_Y)]
-        self.gridlocation = self.gridcopy[x][y]
-
+class Tile:
+    def __init__(self, listofneighbors):
+        self.index = 0 # Just starts out as water lol
+        self.neighbors = listofneighbors # ex: [1,0,1,1]
         self.possibilities = [WATER_TILE, COASTLINE_TILE, GRASS_TILE]
         self.entropy = len(self.possibilities) #should be 3 at the start
+
+class Cell:
+    def __init__(self, x, y):
+        self.row = x
+        self.col = y
+        self.gridcopy = [[0 for row in range(GRID_X)] for col in range(GRID_Y)]
+        self.gridlocation = self.gridcopy[self.row][self.col]
+
+    def getNeighbors(self):
+        listofneighbors = []
+        # Assume there are neighbors
+        north = 1
+        east = 1
+        south = 1
+        west = 1
+
+        # first row
+        if self.row == 0:
+            # won't have a north neighbor
+            north = 0
+
+        # last row
+        if self.row == GRID_X:
+            # won't have a south neighbor
+            south = 0
+
+        # first col
+        if self.col == 0:
+            # won't have a west neighbor
+            west = 0
+
+        # last col
+        if self.col == GRID_Y:
+            #won't have an east neighbor
+           east = 0
+        
+        listofneighbors = [north, east, south, west]
+        return listofneighbors
+    
+    def makeTile(self):
+        neighbors = self.getNeighbors()
+        tile = Tile(neighbors)
+
+
+    
+
 
 
 
@@ -98,7 +142,9 @@ def main():
             for j in range(len(grid[i])):
                 pygame.Surface.blit(screen, blank_tile, (i*tilesize, j*tilesize))
         
-        grid[0][0] = pygame.Surface.blit(screen, tileImages[0], (0, 0))
+        # Forces the top left corner to be a water tile
+        pygame.Surface.blit(screen, tileImages[0], (0, 0))
+        grid[0][0] = ""
 
         print("[0][0] entropy: ")
         print("[0][1] entropy: ")
