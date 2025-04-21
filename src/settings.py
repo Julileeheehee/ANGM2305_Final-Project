@@ -17,6 +17,11 @@ PANEL_HEIGHT = 400
 
 PADDING = 50
 
+# Columns and Rows for the grid
+#TODO: Make these numbers adjustable later
+ROWS = 3
+COLUMNS = 3
+
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)

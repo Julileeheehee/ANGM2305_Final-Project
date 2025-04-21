@@ -5,23 +5,19 @@ import random
 from settings import *
 
 
-class Grid:
+class Panels:
     def __init__(self):
-        self.surface = pygame.Surface((GRID_WIDTH, GRID_HEIGHT))
-        pygame.Surface.fill(self.surface, WHITE)
+        self.surface_left = pygame.Surface((GRID_WIDTH, GRID_HEIGHT))
+        pygame.Surface.fill(self.surface_left, WHITE)
+
+        self.surface_right = pygame.Surface((PANEL_WIDTH, PANEL_HEIGHT))
+        pygame.Surface.fill(self.surface_right, WHITE)
+
         self.display_surface = pygame.display.get_surface()
 
     def update(self):
-        self.display_surface.blit(self.surface, (PADDING, PADDING*2)) # surface, position
-
-class Panel:
-    def __init__(self):
-        self.surface = pygame.Surface((PANEL_WIDTH, PANEL_HEIGHT))
-        pygame.Surface.fill(self.surface, WHITE)
-        self.display_surface = pygame.display.get_surface()
-
-    def update(self):
-        self.display_surface.blit(self.surface, (PADDING*2 + GRID_WIDTH, PADDING*2)) # surface, position
+        self.display_surface.blit(self.surface_left, (PADDING, PADDING*2)) # Purple in picture
+        self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2)) # light blue in picture
 
 
 
@@ -36,8 +32,7 @@ def main():
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
 
-    grid = Grid()
-    panel = Panel()
+    panels = Panels()
 
     running = True
     while running:
@@ -46,8 +41,7 @@ def main():
                 running = False
 
         screen.fill(GRAY)
-        grid.update()
-        panel.update()
+        panels.update()
         pygame.display.flip()
         clock.tick()
 
