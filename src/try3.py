@@ -57,6 +57,12 @@ def grid5():
 
     print('\n'.join(map(' '.join, grid)))
 
+tilerules = {
+    'W': ["W", "C"],
+    'C': ["W", "C", "G"],
+    'G': ["C", "G"]
+}
+
 def grid6():
     empty_cell = "n"
     tiles = ["W", "C", "G"]
@@ -75,9 +81,11 @@ def grid6():
     
 
     firstTile = random.choice(tiles)
+    nextTile = assignRandomTile(firstTile)
+
     grid[row][col] = firstTile
 
-    grid[randomNeighbor[0]][randomNeighbor[1]] = "X"
+    grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
 
     print('\n'.join(map(' '.join, grid)))
 
@@ -101,7 +109,6 @@ def findNeighbors(coord_row, coord_col, grid_row, grid_col):
     listofNeighbors = [north,east,south,west]
     return listofNeighbors
 
-
 def assignRandomNeighbor(listofNeighbors):
     #north = listofNeighbors[0]
     #east = listofNeighbors[1]
@@ -114,6 +121,12 @@ def assignRandomNeighbor(listofNeighbors):
             choice.append(item)
     randomNeighbor = random.choice(choice)
     return randomNeighbor
+
+def assignRandomTile(firstTile):
+    rules = tilerules[firstTile]
+    randomTile = random.choice(rules)
+    return randomTile
+
 
 
 def main():
