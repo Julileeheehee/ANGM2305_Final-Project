@@ -1,5 +1,7 @@
 # This is going to be trying things out with JUST TEXT in the terminal
 
+import random
+
 def grid():
     grid = [[0 for row in range(3)] for col in range(3)]
     for i in range(len(grid)):
@@ -15,8 +17,16 @@ def grid2():
             grid[i][j] = f"{empty_cell} "
     print('\n'.join(map(''.join, grid)))
 
+def grid3():
+    tiles = ["W", "C", "G"]
+    grid = [[0 for row in range(3)] for col in range(3)]
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            grid[i][j] = random.choice(tiles)
+    print('\n'.join(map(' '.join, grid)))
+
 def main():
-    grid2()
+    grid3()
 
 if __name__ == "__main__":
     main()
