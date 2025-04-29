@@ -116,16 +116,7 @@ def grid7():
 
     neighbors = findNeighbors(curr_row, curr_col, 3, 3)
     randomNeighbor = assignRandomNeighbor(neighbors, grid)
-    nextTile = assignRandomTile(currTile)
-    grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
-
-    #handles 2nd iteration
-    curr_row = randomNeighbor[0]
-    curr_col = randomNeighbor[1]
-    currTile = nextTile
-    neighbors = findNeighbors(curr_row, curr_col, 3, 3)
-    randomNeighbor = assignRandomNeighbor(neighbors, grid)
-    nextTile = assignRandomTile(currTile)
+    nextTile = assignRandomTile(currTile, randomNeighbor, grid)
     grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
 
     curr_row = randomNeighbor[0]
@@ -133,8 +124,25 @@ def grid7():
     currTile = nextTile
     neighbors = findNeighbors(curr_row, curr_col, 3, 3)
     randomNeighbor = assignRandomNeighbor(neighbors, grid)
-    nextTile = assignRandomTile(currTile)
+    nextTile = assignRandomTile(currTile, randomNeighbor, grid)
     grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
+
+    curr_row = randomNeighbor[0]
+    curr_col = randomNeighbor[1]
+    currTile = nextTile
+    neighbors = findNeighbors(curr_row, curr_col, 3, 3)
+    randomNeighbor = assignRandomNeighbor(neighbors, grid)
+    nextTile = assignRandomTile(currTile, randomNeighbor, grid)
+    grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
+
+    curr_row = randomNeighbor[0]
+    curr_col = randomNeighbor[1]
+    currTile = nextTile
+    neighbors = findNeighbors(curr_row, curr_col, 3, 3)
+    randomNeighbor = assignRandomNeighbor(neighbors, grid)
+    nextTile = assignRandomTile(currTile, randomNeighbor, grid)
+    grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
+
 
         
 
@@ -158,7 +166,7 @@ def findNeighbors(coord_row, coord_col, grid_row, grid_col):
         west = [coord_row,coord_col - 1]
     
     listofNeighbors = [north,east,south,west]
-    return listofNeighbors
+    return listofNeighbors #<---------------------- Returns a 2D list
 
 def assignRandomNeighbor(listofNeighbors, grid):
     #north = listofNeighbors[0]
@@ -177,12 +185,28 @@ def assignRandomNeighbor(listofNeighbors, grid):
     #print(choice)
     randomNeighbor = random.choice(choice)
     #print(randomNeighbor)
-    return randomNeighbor
+    return randomNeighbor # <-----------------Returns a list [x,y]
 
-def assignRandomTile(firstTile):
-    rules = tilerules[firstTile]
-    randomTile = random.choice(rules)
-    return randomTile
+def assignRandomTile(currTile, randomNeighbor, grid):
+    copy_grid = grid
+    possibleTiles = tilerules[currTile]
+    listofNeighbors = findNeighbors(randomNeighbor[0], randomNeighbor[1], 3, 3)
+    choice = []
+    for item in listofNeighbors:
+        if item != None:
+            i = item[0]
+            j = item[1]
+            if copy_grid[i][j] != 'n':
+                if copy_grid[i][j] not in possibleTiles:
+                    possibleTiles.remove(copy_grid[i][j])
+
+            
+    
+    
+
+    print(possibleTiles)
+    randomTile = random.choice(possibleTiles)
+    return randomTile # <------------------ Returns a string letter W, C, or G
 
 
 
