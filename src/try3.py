@@ -25,8 +25,23 @@ def grid3():
             grid[i][j] = random.choice(tiles)
     print('\n'.join(map(' '.join, grid)))
 
+def grid4():
+    empty_cell = "n"
+    tiles = ["W", "C", "G"]
+    grid = [[0 for i in range(3)] for j in range(3)]
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            grid[i][j] = empty_cell
+    
+    row = random.randint(0,2)
+    col = random.randint(0,2)
+    print(f"Coordinates: {row},{col}")
+    grid[row][col] = random.choice(tiles)
+
+    print('\n'.join(map(' '.join, grid)))
+
 def main():
-    grid3()
+    grid4()
 
 if __name__ == "__main__":
     main()
