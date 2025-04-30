@@ -21,8 +21,14 @@ class Cell():
     def getEntropy(self):
         return str(self.entropy)
 
+def start_over():
+    print("\nMain Grid:")
+    new_tile_grid()
+    print("------------------")
+    print("Entropy Grid:")
+    new_entropy_grid()
 
-def main_grid():
+def new_tile_grid():
     empty_cell = "n"
     grid = [[0 for i in range(3)] for j in range(3)]
     for i in range(len(grid)):
@@ -31,7 +37,7 @@ def main_grid():
 
     print('\n'.join(map(' '.join, grid)))
 
-def entropy_grid():
+def new_entropy_grid():
     grid = [[0 for i in range(3)] for j in range(3)]
     for i in range(len(grid)):
         for j in range(len(grid[i])):
@@ -41,11 +47,7 @@ def entropy_grid():
 
 
 def main():
-    print("\nMain Grid:")
-    main_grid()
-    print("------------------")
-    print("Entropy Grid:")
-    entropy_grid()
+    start_over()
 
 if __name__ == "__main__":
     main()
