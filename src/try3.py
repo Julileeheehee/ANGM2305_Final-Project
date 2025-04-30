@@ -118,6 +118,7 @@ def grid7():
     randomNeighbor = assignRandomNeighbor(neighbors, grid)
     nextTile = assignRandomTile(currTile, randomNeighbor, grid)
     grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
+    print('\n'.join(map(' '.join, grid)))
 
     curr_row = randomNeighbor[0]
     curr_col = randomNeighbor[1]
@@ -126,6 +127,7 @@ def grid7():
     randomNeighbor = assignRandomNeighbor(neighbors, grid)
     nextTile = assignRandomTile(currTile, randomNeighbor, grid)
     grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
+    print('\n'.join(map(' '.join, grid)))
 
     curr_row = randomNeighbor[0]
     curr_col = randomNeighbor[1]
@@ -134,6 +136,7 @@ def grid7():
     randomNeighbor = assignRandomNeighbor(neighbors, grid)
     nextTile = assignRandomTile(currTile, randomNeighbor, grid)
     grid[randomNeighbor[0]][randomNeighbor[1]] = nextTile
+    print('\n'.join(map(' '.join, grid)))
 
     curr_row = randomNeighbor[0]
     curr_col = randomNeighbor[1]
@@ -169,12 +172,15 @@ def findNeighbors(coord_row, coord_col, grid_row, grid_col):
     return listofNeighbors #<---------------------- Returns a 2D list
 
 def assignRandomNeighbor(listofNeighbors, grid):
+    """
+    This looks for all the available neighbors to move. It checks grid boundaries and only goes to cells that are "empty" or n
+    After, it will pick a random neighbor from a list of the possible places to move to
+    """
     #north = listofNeighbors[0]
     #east = listofNeighbors[1]
     #south = listofNeighbors[2]
     #west = listofNeighbors[3]
     copy_grid = grid
-    print(copy_grid)
     choice = []
     for item in listofNeighbors:
         if item != None:
@@ -188,17 +194,24 @@ def assignRandomNeighbor(listofNeighbors, grid):
     return randomNeighbor # <-----------------Returns a list [x,y]
 
 def assignRandomTile(currTile, randomNeighbor, grid):
+    """
+    This takes 3 things: the tile that was just "collapsed", the random neighbor that's next in line, and the main grid to make a copy of.
+    A list of possible tiles are made from the rules of the current tile
+    Then, a list of neighbors of the neighbor is made.
+    TODO: Finish these notes
+    """
     copy_grid = grid
     possibleTiles = tilerules[currTile]
     listofNeighbors = findNeighbors(randomNeighbor[0], randomNeighbor[1], 3, 3)
-    choice = []
     for item in listofNeighbors:
         if item != None:
             i = item[0]
             j = item[1]
             if copy_grid[i][j] != 'n':
                 if copy_grid[i][j] not in possibleTiles:
-                    possibleTiles.remove(copy_grid[i][j])
+                    #Ah....it would definitely fail here
+                    #I need to check the directions.....
+                    pass
 
             
     
