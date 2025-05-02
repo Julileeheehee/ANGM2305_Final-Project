@@ -1,4 +1,5 @@
 import random
+#from pprint import pprint
 
 TILES = ["W", "C", "G"]
 
@@ -21,19 +22,28 @@ class Grid():
     Each spot [i][j] will contain a Cell()
     '''
     def __init__(self):
-        self.grid = [[0 for i in range(3)] for j in range(3)]
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[i])):
-                self.cell = Cell()
-                self.grid[i][j] = self.cell
+        #cell = Cell()
+        #list[list[Cell]]
+        self.grid: list[list[Cell]] = [[Cell() for i in range(3)] for j in range(3)] #OMG had to typecast the grid cells because it didn't know it was supposed to be a cell
         self.entropyofNeighbors = {}
         self.listofCollapsedCells = []
+        self.currentRow = 0
+        self.currentCol = 0
 
     def showGrid(self):
+        part = ""
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
-                self.grid[i][j] = self.cell.showTiles()
-        print('\n'.join(map(' '.join, self.grid)))
+                part += self.grid[i][j].showTiles() + " "
+            print(part)
+            part = ""
+        
+
+    def firstCoord(self):
+        self.currentRow = int(input("Row? (0, 1, 2): "))
+        self.currentCol = int(input("Column? (0, 1, 2): "))
+        tiletoCollapseto = input("Tile? (W, C, G): ")
+        self.grid[self.currentRow][self.currentCol].collapseCell(tiletoCollapseto)
 
 class Cell():
     '''
@@ -46,7 +56,13 @@ class Cell():
         self.isCollapsed = False
     
     def showTiles(self):
-        return str(self.possibleTiles)
+        return(str(self.possibleTiles))
+    
+    def collapseCell(self, tiletoCollapseto):
+        self.possibleTiles = [tiletoCollapseto]
+        #for tile in self.possibleTiles:
+            #if tile != tiletoCollapseto:
+             #   self.possibleTiles.remove(tile)
 
 # to simplify things for me, I won't make the tiles into its own class.
 
@@ -72,6 +88,8 @@ class Cell():
 
 def main():
     grid = Grid()
+    grid.showGrid()
+    grid.firstCoord()
     grid.showGrid()
 
 
