@@ -1,6 +1,6 @@
 import random
 
-TILES = ["W", "C", "G"]
+TILES = ["W", "C", "G", "n"]
 
 TILERULES = {
     'W': ["W", "W", "W", "W"],
@@ -21,42 +21,63 @@ class Tile():
         #self.south_possibilities = []
         #self.west_possibilities = []
         self.possibilities = TILES # A list
+        self.collapsed = False
 
+    def getNumofPossibilities(self):
+        return len(self.possibilities)
+    
     def analyze(self, tile):
         if tile == "W":
             self.possibilities = ["W", "C"]
         elif tile == "C":
             self.possibilities = ["W", "C", "G"]
-        else:
+        elif tile == "G":
             self.possibilities = ["C", "G"]
+        else: #"n"
+            self.possibilities = ["W", "C", "G"]
+    
+    def isCollapsed(self):
+        if len(self.possibilities) == 1:
+            self.collapsed = True
+        return self.collapsed
     
     def showTile(self):
-        return self.possibilities[0] # should get narrowed down to one option
+        return str(self.possibilities[0])
+    
+    def setTile(self, tiletobeset):
+        tile = [tiletobeset]
+        self.possibilities = tile
             
 
 
 class Cell():
-    def __init__(self, pos):
-        self.x, self.y = pos # saves the location on the grid
+    def __init__(self, pos_x, pos_y):
+        self.x = pos_x 
+        self.y = pos_y # saves the location on the grid
         self.blank = "n"
         self.tile = Tile()
-        self.possibilities = self.tile.possibilities() # Should start out with 3 in this case
-        self.entropy = len(self.possibilities)
+        self.entropy = self.tile.getNumofPossibilities() # Should start out with 3 in this case
         self.collapsed = False
 
+    def setTile(self, tiletobeSet):
+        self.collapsed = True
+        self.tile.setTile(tiletobeSet)
+        self.showTile()
+
+
     def showTile(self):
-        if self.collapsed == False:
+        if not self.tile.isCollapsed():
+            self.collapsed = False
             return self.blank
         else:
             collapsedTile = self.tile.showTile()
-            self.entropy = 0
             return collapsedTile
         
     def getEntropy(self):
         return str(self.entropy)
     
-    def setToBlank(self):
-        self.collapsed = False
+    #def setToBlank(self):
+     #   self.collapsed = False
     
     def showEntropyNum(self):
         self.tile = self.getEntropy()
@@ -93,8 +114,8 @@ def grid():
     grid = [[0 for i in range(3)] for j in range(3)]
     for i in range(len(grid)):
         for j in range(len(grid[i])):
-            empty_cell = "n"
-            grid[i][j] = empty_cell
+            cell = Cell(i, j)
+            grid[i][j] = cell.showTile()
     print('\n'.join(map(' '.join, grid)))
 
     first_coord = pickFirstCell()
@@ -103,19 +124,27 @@ def grid():
     col = first_coord[1]
 
 
-    grid[row][col] = collapsed_tile
+    grid[row][col] = cell.setTile(collapsed_tile)
+    grid[row][col] = cell.showTile()
+    #print(grid)
     print('\n'.join(map(' '.join, grid)))
-    showentropy(grid)
+
+    grid_copy = grid
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            grid_copy[i][j] = cell.showEntropyNum() 
+
+    print('\n'.join(map(' '.join, grid_copy)))
+
+    #showentropy(grid, cell)
     
-def showentropy(grid):
+
+def showentropy(grid, cell: Cell):
     entropy = ""
     for i in range(len(grid)):
        for j in range(len(grid[i])):
-            if grid[i][j] == "n":
-                entropy = 3
-            else:
-                entropy = 0
-            grid[i][j] = str(entropy)
+            grid[i][j] = cell.getEntropy()
+            grid[i][j] = cell.showEntropyNum()
     print('\n'.join(map(' '.join, grid)))
 
 def findNeighbors(coord_row, coord_col, grid_row, grid_col):
