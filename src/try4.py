@@ -13,25 +13,50 @@ EAST = 1
 WEST = 2
 SOUTH = 3
 
+class Tile():
+    def __init__(self):
+        #self.edges = []
+        #self.north_possibilities = []
+        #self.east_possibilities = []
+        #self.south_possibilities = []
+        #self.west_possibilities = []
+        self.possibilities = TILES # A list
+
+    def analyze(self, tile):
+        if tile == "W":
+            self.possibilities = ["W", "C"]
+        elif tile == "C":
+            self.possibilities = ["W", "C", "G"]
+        else:
+            self.possibilities = ["C", "G"]
+    
+    def showTile(self):
+        return self.possibilities[0] # should get narrowed down to one option
+            
 
 
 class Cell():
-    def __init__(self):
+    def __init__(self, pos):
+        self.x, self.y = pos # saves the location on the grid
         self.blank = "n"
-        self.tile = self.blank
-        self.possibilities = TILES # Should start out with 3 in this case
+        self.tile = Tile()
+        self.possibilities = self.tile.possibilities() # Should start out with 3 in this case
         self.entropy = len(self.possibilities)
-    
+        self.collapsed = False
+
+    def showTile(self):
+        if self.collapsed == False:
+            return self.blank
+        else:
+            collapsedTile = self.tile.showTile()
+            self.entropy = 0
+            return collapsedTile
+        
     def getEntropy(self):
         return str(self.entropy)
     
     def setToBlank(self):
-        return self.blank
-    
-    def collapseCell(self, pickedTile):
-        self.tile = pickedTile
-        self.entropy = 0
-        return self.tile
+        self.collapsed = False
     
     def showEntropyNum(self):
         self.tile = self.getEntropy()
@@ -65,7 +90,6 @@ class Cell():
     
 def grid():
     
-    
     grid = [[0 for i in range(3)] for j in range(3)]
     for i in range(len(grid)):
         for j in range(len(grid[i])):
@@ -73,15 +97,13 @@ def grid():
             grid[i][j] = empty_cell
     print('\n'.join(map(' '.join, grid)))
 
-    
-    
-
     first_coord = pickFirstCell()
-    first_tile = pickFirstTile()
-    first_row = first_coord[0]
-    first_col = first_coord[1]
+    collapsed_tile = pickFirstTile()
+    row = first_coord[0]
+    col = first_coord[1]
 
-    grid[first_row][first_col] = first_tile
+
+    grid[row][col] = collapsed_tile
     print('\n'.join(map(' '.join, grid)))
     showentropy(grid)
     
@@ -95,6 +117,30 @@ def showentropy(grid):
                 entropy = 0
             grid[i][j] = str(entropy)
     print('\n'.join(map(' '.join, grid)))
+
+def findNeighbors(coord_row, coord_col, grid_row, grid_col):
+    north = None
+    if coord_row != 0:
+        north = [coord_row - 1,coord_col]
+
+    east = None
+    if coord_col != grid_col - 1:
+        east = [coord_row, coord_col + 1]
+
+    south = None
+    if coord_row != grid_row - 1:
+        south = [coord_row + 1,coord_col]
+
+    west = None
+    if coord_col != 0:
+        west = [coord_row,coord_col - 1]
+    
+    listofNeighbors = [north,east,south,west]
+    return listofNeighbors #<---------------------- Returns a 2D list 
+
+def updateNeighborPossibilities(collapsed_tile, list_of_neighbors, grid):
+    # Take the collapsed tile and compare it to 
+    pass
 
 def pickFirstCell():
     row = int(input("Row? (0, 1, 2): "))
