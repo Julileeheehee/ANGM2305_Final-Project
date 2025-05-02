@@ -1,6 +1,6 @@
 import random
 
-TILES = ["W", "C", "G", "n"]
+TILES = ["W", "C", "G"]
 
 TILERULES = {
     'W': ["W", "W", "W", "W"],
@@ -66,7 +66,7 @@ class Cell():
 
 
     def showTile(self):
-        if not self.tile.isCollapsed():
+        if self.tile.isCollapsed() == False:
             self.collapsed = False
             return self.blank
         else:
@@ -74,7 +74,7 @@ class Cell():
             return collapsedTile
         
     def getEntropy(self):
-        return str(self.entropy)
+        print(self.entropy)
     
     #def setToBlank(self):
      #   self.collapsed = False
@@ -129,12 +129,11 @@ def grid():
     #print(grid)
     print('\n'.join(map(' '.join, grid)))
 
-    grid_copy = grid
     for i in range(len(grid)):
         for j in range(len(grid[i])):
-            grid_copy[i][j] = cell.showEntropyNum() 
+            grid[i][j] = cell.showEntropyNum() 
 
-    print('\n'.join(map(' '.join, grid_copy)))
+    print('\n'.join(map(' '.join, grid)))
 
     #showentropy(grid, cell)
     
