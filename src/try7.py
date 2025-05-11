@@ -22,8 +22,10 @@ PADDING = 50
 
 # Columns and Rows for the grid
 #TODO: Make these numbers adjustable later
-ROWS = 3
-COLUMNS = 3
+NUM_OF_ROWS_COLS = 10
+
+PIXEL_DIM_OF_TILE = 64
+SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 
 
 
@@ -166,7 +168,7 @@ def draw_grid(screen):
 
 class Button:
     def __init__(self, x, y):
-        self.img = pygame.image.load("images/3-tiles/blank_tile.png")
+        self.img = pygame.transform.scale(pygame.image.load("images/3-tiles/blank_tile.png"), (64*0.99, 64*0.99))
         self.rect = self.img.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
@@ -175,12 +177,19 @@ class Button:
     def draw(self, screen):
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos): # hovering over
+            print(f"hover point: {pos}" )
             if pygame.mouse.get_pressed()[0] and not self.clicked: # left mouse click. Middle is 1, and 2 is right
                 self.clicked = True
-                print("click")
             if not pygame.mouse.get_pressed()[0]:
                 self.clicked = False
         screen.blit(self.img, (self.rect.x, self.rect.y))
+
+
+
+
+
+        
+
 
 
 
@@ -213,7 +222,7 @@ def main():
 
 
     panels = Panels()
-    button = Button(200, 200)
+    
 
     running = True
     while running:
@@ -229,7 +238,11 @@ def main():
 
         #draw
         #draw_grid(screen)
-        button.draw(screen)
+        for row in range(NUM_OF_ROWS_COLS):
+            for col in range(NUM_OF_ROWS_COLS):
+                button = Button(row*64, col*64)
+                button.draw(screen)
+        
 
 
         #flip display
