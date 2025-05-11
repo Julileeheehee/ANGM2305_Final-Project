@@ -37,7 +37,7 @@ class Panels:
         self.display_surface = pygame.display.get_surface()
 
     def update(self):
-        self.display_surface.blit(self.surface_left, (0,0)) # Purple in picture
+        self.display_surface.blit(self.surface_left, (PADDING, PADDING*2)) # Purple in picture
         self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2)) # light blue in picture
 
 
@@ -162,6 +162,32 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
         next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
 
+
+class Button:
+    def __init__(self, x, y):
+        self.img = pygame.image.load("images/3-tiles/blank_tile.png")
+        self.rect = self.img.get_rect()
+        self.rect.topleft = (x,y)
+        self.clicked = False
+    
+    def draw(self, screen):
+        pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(pos): # hovering over
+            if pygame.mouse.get_pressed()[0] and not self.clicked: # left mouse click. Middle is 1, and 2 is right
+                self.clicked = True
+                print("click")
+            if not pygame.mouse.get_pressed()[0]:
+                self.clicked = False
+        screen.blit(self.img, (self.rect.x, self.rect.y))
+
+
+
+
+
+
+
+
+
 def main():
     #num_of_rows = int(input("How many rows would you like?: "))
     #num_of_cols = int(input("How many columns would you like?: "))
@@ -173,14 +199,19 @@ def main():
     #starting_tile = TileType(input("Tile? (W, C, G): "))
 
     #fill_grid(grid, starting_row, starting_col, starting_tile)
-    #print_grid(grid)
+    #print_grid(grid
+
+
     pygame.init()
     pygame.display.set_caption("Wave Function Collapse")
     resolution = (SCREEN_WIDTH, SCREEN_HEIGHT)
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
+    fps = 24
+
 
     panels = Panels()
+    button = Button(200, 200)
 
     running = True
     while running:
@@ -188,17 +219,20 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            
+
         #backgrounds
         screen.fill(GRAY)
         panels.update()
 
         #draw
-        draw_grid(screen)
+        #draw_grid(screen)
+        button.draw(screen)
 
 
         #flip display
         pygame.display.flip()
-        clock.tick()
+        clock.tick(fps)
 
     pygame.quit()
 
