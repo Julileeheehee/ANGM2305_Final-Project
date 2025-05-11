@@ -47,6 +47,9 @@ class Tile:
                 self.available_tiles &= set([TileType.WATER, TileType.COAST, TileType.GRASS])
             elif neighbor.tile_type == TileType.GRASS:
                 self.available_tiles &= set([TileType.COAST, TileType.GRASS])
+    
+    def get_entropy(self):
+        return len(self.available_tiles)
 
 
 
@@ -123,6 +126,7 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
             tile.set_available_tiles(north_neighbor, east_neighbor, south_neighbor, west_neighbor)
 
+            entropy = tile.get_entropy()
 
 
 
