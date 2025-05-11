@@ -9,10 +9,50 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (77, 77, 77)
 
+# grid/panel sizes
+
+# TODO: Make these numbers adjustable
+GRID_WIDTH = 400
+GRID_HEIGHT = 400
+
+PANEL_WIDTH = 250
+PANEL_HEIGHT = 400
+
+PADDING = 50
+
+# Columns and Rows for the grid
+#TODO: Make these numbers adjustable later
+ROWS = 3
+COLUMNS = 3
+
+
+class Panels:
+    def __init__(self):
+        self.surface_left = pygame.Surface((GRID_WIDTH, GRID_HEIGHT))
+        pygame.Surface.fill(self.surface_left, WHITE)
+
+        self.surface_right = pygame.Surface((PANEL_WIDTH, PANEL_HEIGHT))
+        pygame.Surface.fill(self.surface_right, WHITE)
+
+        self.display_surface = pygame.display.get_surface()
+
+    def update(self):
+        self.display_surface.blit(self.surface_left, (0,0)) # Purple in picture
+        self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2)) # light blue in picture
+
+
+
+def draw_grid(screen):
+    tile_size = GRID_WIDTH//3
+    for row in range(0, GRID_WIDTH - 1, tile_size):
+        for col in range(0, GRID_HEIGHT - 1, tile_size):
+            rect = pygame.Rect(row, col, tile_size, tile_size)
+            pygame.draw.rect(screen, BLACK, rect, 2)
+
+
 class TileType(Enum):
     COAST = 'C'
     GRASS = 'G'
-
 
 class Tile:
     def __init__(self):
@@ -43,8 +83,6 @@ class Tile:
     
     def pick_tile(self):
         self.tile_type = random.choice(list(self.available_tiles))
-
-
 
 def print_grid(grid: list[list[Tile | None]]):
     print_text = "Printing the grid:"
@@ -142,6 +180,7 @@ def main():
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
 
+    panels = Panels()
 
     running = True
     while running:
@@ -151,8 +190,10 @@ def main():
 
         #backgrounds
         screen.fill(GRAY)
+        panels.update()
 
-
+        #draw
+        draw_grid(screen)
 
 
         #flip display
