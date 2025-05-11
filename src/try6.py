@@ -36,8 +36,18 @@ def print_grid(grid: list[list[Tile | None]]):
         print()
     print()
 
+def first_tile(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType):
+    grid[starting_row][starting_col].tile_type = starting_tile
+
 def main():
-    grid: list[list[Tile | None]] = [[Tile() for col in range(6)] for row in range(6)] # I learned that | means or, so I can make it a tile or none!
+    grid: list[list[Tile | None]] = [[Tile() for col in range(3)] for row in range(3)] # I learned that | means or, so I can make it a tile or none!
+    print_grid(grid)
+    
+    starting_row = int(input("Row? (0-2): "))
+    starting_col = int(input("Col? (0-2): "))
+    starting_tile = TileType(input("Tile? (W, C, G): "))
+
+    first_tile(grid, starting_row, starting_col, starting_tile)
     print_grid(grid)
 
 if __name__ == "__main__":
