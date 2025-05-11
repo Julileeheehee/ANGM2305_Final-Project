@@ -2,8 +2,8 @@ from enum import Enum
 # (done) Step 1: Initialize grid, cells, and all the tiles
 # (done) Step 2: Pick the first spot and the tile to collapse to
 
-# Step 3: Make a list of locations of collapsed cells (save as a tuple)
-# Step 4: Grab the neighbors of collapsed cells, and remove tiles according to rules
+# (done) Step 3: Make a list of neighbors of collapsed cells (save as a tuple)
+# Step 4: Grab the , and remove tiles according to rules
 # Step 5: Make a dictionary of entropy keys with location values of the neighbors (will be updated a lot)
 # Step 6: Update entropy for grid via # tiles in cell
 # Step 7: Pick a random location from the smallest key
@@ -26,6 +26,12 @@ class TileType(Enum): # This handles the tile types without making a class. Enum
 class Tile:
     def __init__(self):
         self.tile_type : TileType | None = None #Basically, the tile type is either a type or none. The default is none because it hasn't been collapsed yet
+        self.available_tiles: set[TileType] = set() # A set is basically a dictionary, but just the keys. Like a list, but cannot be indexed. A set is initialized with () but uses {}
+
+
+    def update_available_tiles(self, north_neighbor, east_neighbor, south_neighbor, west_neighbor):
+        for tile_type in TileType:
+            self.available_tiles = set(tile_type)
 
 def print_grid(grid: list[list[Tile | None]]):
     print_text = "Printing the grid:"
@@ -64,6 +70,7 @@ def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int,
     return list_of_next_coordinates
 
 def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType):
+    is_grid_collapsed = False
     grid[starting_row][starting_col].tile_type = starting_tile
 
     next_neighbor_coordinates: list[tuple[int, int]] = determine_next_neighbor_coordinates(grid, starting_row, starting_col)
@@ -71,6 +78,25 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
     print("Neighbor locations: ", end="")
     print(next_neighbor_coordinates)
     print()
+
+    #while the next_neighbor_coordinates has places to move to,
+    #   loop through each location in the list
+    #   grab the tile
+    #   update the types it could be
+    #   and calculate its entropy
+
+    while next_neighbor_coordinates:
+        list_of_low_entropy_coordinates: list[tuple[int,int]] = []
+
+        for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
+            row, col = coordinate
+            tile: Tile | None = grid[row][col]
+
+            north_neighbor = grid[row][col - 1]
+            east_neighbor = grid[row + 1][col]
+            south_neighbor = grid[row][col + 1]
+            west_neighbor = grid[row - 1][col]
+
 
 
 
