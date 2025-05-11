@@ -132,8 +132,13 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
             entropy = tile.get_entropy()
 
-            # From here: add the coordinates of the tiles with the lowest entropy 
-            if entropy < 3: # 3 is the highest entropy
+            # From here: add the coordinates of the tiles with the lowest entropy
+            lowest_entropy = 3 # 3 is the highest entropy
+            if entropy < lowest_entropy: 
+                list_of_low_entropy_coordinates.clear() # removes the old coordinates that have higher entropy numbers
+                list_of_low_entropy_coordinates.append(coordinate)
+                lowest_entropy = entropy # Sets the lowest to the new entropy
+            elif entropy == lowest_entropy: # basically we need to try to get this down to 1 or 2
                 list_of_low_entropy_coordinates.append(coordinate)
         
         # Pick a random coordinate fromm the list
