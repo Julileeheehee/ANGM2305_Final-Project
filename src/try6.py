@@ -17,12 +17,24 @@ import random
 
 ###### I basically learned that it's SUPER IMPORTANT to include the types of the parameters, so i'm doing my best to include it all the time#############
 
+# ANSI escape sequences:-----------------------------------
+BRIGHT_GREEN = '\033[92m'
+BRIGHT_YELLOW = '\033[93m'
+BRIGHT_BLUE = '\033[94m'
+
+
+RESET = '\033[0m' # called to return to standard terminal text color
+#------------------------------------------------------------------
+
+
+
 
 
 class TileType(Enum): # This handles the tile types without making a class. Enum is super useful for handling nonchangable stuff. This helps me reduce checking with if/else statements
     WATER = 'W'
     COAST = 'C'
     GRASS = 'G'
+
 
 class Tile:
     def __init__(self):
@@ -101,14 +113,10 @@ def get_tile_from_coordinates(grid, row, col):
         return None
 
 def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType):
-    is_grid_collapsed = False
+    #is_grid_collapsed = False
     grid[starting_row][starting_col].tile_type = starting_tile
 
     next_neighbor_coordinates: list[tuple[int, int]] = determine_next_neighbor_coordinates(grid, starting_row, starting_col)
-    print()
-    print("Neighbor locations: ", end="")
-    print(next_neighbor_coordinates)
-    print()
 
     #while the next_neighbor_coordinates has places to move to,
     #   loop through each location in the list
