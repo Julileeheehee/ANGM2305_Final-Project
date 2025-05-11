@@ -29,9 +29,26 @@ class Tile:
         self.available_tiles: set[TileType] = set() # A set is basically a dictionary, but just the keys. Like a list, but cannot be indexed. A set is initialized with () but uses {}
 
 
-    def update_available_tiles(self, north_neighbor, east_neighbor, south_neighbor, west_neighbor):
+    def set_available_tiles(self, north_neighbor, east_neighbor, south_neighbor, west_neighbor):
+        #self.available_tiles: set[TileType] = set()
         for tile_type in TileType:
-            self.available_tiles = set(tile_type)
+            self.available_tiles.add(tile_type) # no need to worry about duplicates
+        
+        self.update_tiles_from_neighbor(north_neighbor)
+        self.update_tiles_from_neighbor(east_neighbor)
+        self.update_tiles_from_neighbor(south_neighbor)
+        self.update_tiles_from_neighbor(west_neighbor)
+    
+    def update_tiles_from_neighbor(self, neighbor):
+        if neighbor and neighbor.tile_type: #checks if these exist and are not None
+            if neighbor.tile_type == TileType.WATER:
+                self.available_tiles &= set([TileType.WATER, TileType.COAST]) #learned a new assignment operator. Basically I'm combining two sets, the duplicates will be removed anyways because it's a set
+            elif neighbor.tile_type == TileType.COAST:
+                self.available_tiles &= set([TileType.WATER, TileType.COAST, TileType.GRASS])
+            elif neighbor.tile_type == TileType.GRASS:
+                self.available_tiles &= set([TileType.COAST, TileType.GRASS])
+
+
 
 def print_grid(grid: list[list[Tile | None]]):
     print_text = "Printing the grid:"
@@ -103,7 +120,9 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
             east_neighbor = get_tile_from_coordinates(grid, row + 1, col)
             south_neighbor = get_tile_from_coordinates(grid, row, col + 1)
             west_neighbor = get_tile_from_coordinates(grid, row - 1, col)
-    
+
+            tile.set_available_tiles(north_neighbor, east_neighbor, south_neighbor, west_neighbor)
+
 
 
 
