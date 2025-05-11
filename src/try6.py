@@ -69,6 +69,13 @@ def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int,
 
     return list_of_next_coordinates
 
+def get_tile_from_coordinates(grid, row, col):
+    # check if the grid at the coordinate is not out of bounds
+    if 0 <= row < len(grid) and 0 <= col < len(grid[0]):
+        return grid[row][col]
+    else: # OoB
+        return None
+
 def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType):
     is_grid_collapsed = False
     grid[starting_row][starting_col].tile_type = starting_tile
@@ -90,13 +97,13 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
         for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
             row, col = coordinate
-            tile: Tile | None = grid[row][col]
+            tile: Tile | None = get_tile_from_coordinates(grid, row, col)
 
-            north_neighbor = grid[row][col - 1]
-            east_neighbor = grid[row + 1][col]
-            south_neighbor = grid[row][col + 1]
-            west_neighbor = grid[row - 1][col]
-
+            north_neighbor = get_tile_from_coordinates(grid, row, col - 1)
+            east_neighbor = get_tile_from_coordinates(grid, row + 1, col)
+            south_neighbor = get_tile_from_coordinates(grid, row, col + 1)
+            west_neighbor = get_tile_from_coordinates(grid, row - 1, col)
+    
 
 
 
