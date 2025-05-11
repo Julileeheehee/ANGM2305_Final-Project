@@ -2,8 +2,8 @@ import pygame
 from enum import Enum
 import random
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1280 # weird numbers I know
+SCREEN_HEIGHT = 840 # TODO: Maybe calculate to be 720?
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -12,11 +12,11 @@ GRAY = (77, 77, 77)
 # grid/panel sizes
 
 # TODO: Make these numbers adjustable
-GRID_WIDTH = 400
-GRID_HEIGHT = 400
+GRID_WIDTH = 640
+GRID_HEIGHT = 640
 
-PANEL_WIDTH = 250
-PANEL_HEIGHT = 400
+PANEL_WIDTH = 490
+PANEL_HEIGHT = 640
 
 PADDING = 50
 
@@ -26,28 +26,7 @@ ROWS = 3
 COLUMNS = 3
 
 
-class Panels:
-    def __init__(self):
-        self.surface_left = pygame.Surface((GRID_WIDTH, GRID_HEIGHT))
-        pygame.Surface.fill(self.surface_left, WHITE)
 
-        self.surface_right = pygame.Surface((PANEL_WIDTH, PANEL_HEIGHT))
-        pygame.Surface.fill(self.surface_right, WHITE)
-
-        self.display_surface = pygame.display.get_surface()
-
-    def update(self):
-        self.display_surface.blit(self.surface_left, (PADDING, PADDING*2)) # Purple in picture
-        self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2)) # light blue in picture
-
-
-
-def draw_grid(screen):
-    tile_size = GRID_WIDTH//3
-    for row in range(0, GRID_WIDTH - 1, tile_size):
-        for col in range(0, GRID_HEIGHT - 1, tile_size):
-            rect = pygame.Rect(row, col, tile_size, tile_size)
-            pygame.draw.rect(screen, BLACK, rect, 2)
 
 
 class TileType(Enum):
@@ -162,6 +141,28 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
         next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
 
+class Panels:
+    def __init__(self):
+        self.surface_left = pygame.Surface((GRID_WIDTH, GRID_HEIGHT))
+        pygame.Surface.fill(self.surface_left, WHITE)
+
+        self.surface_right = pygame.Surface((PANEL_WIDTH, PANEL_HEIGHT))
+        pygame.Surface.fill(self.surface_right, WHITE)
+
+        self.display_surface = pygame.display.get_surface()
+
+    def update(self):
+        self.display_surface.blit(self.surface_left, (PADDING, PADDING*2)) # Purple in picture
+        self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2)) # light blue in picture
+
+
+
+def draw_grid(screen):
+    tile_size = GRID_WIDTH//3
+    for row in range(0, GRID_WIDTH - 1, tile_size):
+        for col in range(0, GRID_HEIGHT - 1, tile_size):
+            rect = pygame.Rect(row, col, tile_size, tile_size)
+            pygame.draw.rect(screen, BLACK, rect, 2)
 
 class Button:
     def __init__(self, x, y):
@@ -169,6 +170,7 @@ class Button:
         self.rect = self.img.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
+        
     
     def draw(self, screen):
         pos = pygame.mouse.get_pos()
