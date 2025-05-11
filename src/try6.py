@@ -153,11 +153,13 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
         next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
 
 def main():
-    grid: list[list[Tile | None]] = [[Tile() for col in range(3)] for row in range(3)] # I learned that | means or, so I can make it a tile or none!
+    num_of_rows = int(input("How many rows would you like?: "))
+    num_of_cols = int(input("How many columns would you like?: "))
+    grid: list[list[Tile | None]] = [[Tile() for col in range(num_of_cols)] for row in range(num_of_rows)] # I learned that | means or, so I can make it a tile or none!
     print_grid(grid)
 
-    starting_row = int(input("Row? (0-2): "))
-    starting_col = int(input("Col? (0-2): "))
+    starting_row = int(input(f"Row? (0-{num_of_rows}): "))
+    starting_col = int(input(f"Col? (0-{num_of_cols}): "))
     starting_tile = TileType(input("Tile? (W, C, G): "))
 
     fill_grid(grid, starting_row, starting_col, starting_tile)
