@@ -1,5 +1,5 @@
-
-# Step 1: Initialize grid, cells, and all the tiles
+from enum import Enum
+# (done) Step 1: Initialize grid, cells, and all the tiles
 # Step 2: Pick the first spot and the tile to collapse to
 
 # Step 3: Make a list of locations of collapsed cells (save as a tuple)
@@ -13,13 +13,14 @@
 # Step 10: If there are no options available (definitely possible), start over with with the inputs of step 2.
 # Step 11: When the len(list of collapsed cells) == grid row x grid col, the map is complete
 
-WATER = 'W'
-COAST = 'C'
-GRASS = 'G'
+class TileType(Enum): # This handles the tile types without making a class. Enum is super useful for handling nonchangable stuff. This helps me reduce checking with if/else statements
+    WATER = 'W'
+    COAST = 'C'
+    GRASS = 'G'
 
 class Tile:
     def __init__(self):
-        self.tile_type = None
+        self.tile_type : TileType | None = None #Basically, the tile type is either a type or none. The default is none because it hasn't been collapsed yet
 
 def print_grid(grid: list[list[Tile | None]]):
     print_text = "Printing the grid:"
@@ -29,7 +30,7 @@ def print_grid(grid: list[list[Tile | None]]):
     for col in grid:
         for row in col:
             if row.tile_type: # if it exists/not None
-                print(row.tile_type, end=" ")
+                print(row.tile_type.value, end=" ") #enum.value just returns the value, so row.WATER will return a value of W
             else:
                 print("-", end=" ")
         print()
