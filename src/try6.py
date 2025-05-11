@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 # (done) Step 1: Initialize grid, cells, and all the tiles
 # (done) Step 2: Pick the first spot and the tile to collapse to
 
@@ -50,6 +51,9 @@ class Tile:
     
     def get_entropy(self):
         return len(self.available_tiles)
+    
+    def pick_tile(self):
+        self.tile_type = random.choice(list(self.available_tiles))
 
 
 
@@ -131,7 +135,16 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
             # From here: add the coordinates of the tiles with the lowest entropy 
             if entropy < 3: # 3 is the highest entropy
                 list_of_low_entropy_coordinates.append(coordinate)
-        print(list_of_low_entropy_coordinates)
+        
+        # Pick a random coordinate fromm the list
+        coordinate_to_move_to = random.choice(list_of_low_entropy_coordinates)
+        # Remove that coordinate from next_neighbor_coordinates
+        next_neighbor_coordinates.remove(coordinate_to_move_to)
+
+        move_to_row, move_to_col = coordinate_to_move_to
+        grid[move_to_row][move_to_col].pick_tile()
+
+        next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
 
 def main():
     grid: list[list[Tile | None]] = [[Tile() for col in range(3)] for row in range(3)] # I learned that | means or, so I can make it a tile or none!
