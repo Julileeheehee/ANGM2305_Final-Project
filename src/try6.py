@@ -41,23 +41,24 @@ def print_grid(grid: list[list[Tile | None]]):
         print()
     print()
 
-def determine_next_neighbor_coordinates(grid, row, col):
+def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int, col: int):
     # Take the grid, the location coordinates (x, y), and find the neighbors
     list_of_next_coordinates: list[tuple[int, int]] = []
 
     #determine north, east, south, west neighbors
+    #Must be None
     
     #north
-    if col - 1 >= 0:
+    if col - 1 >= 0 and grid[row][col - 1] and grid[row][col - 1].tile_type == None:
         list_of_next_coordinates.append((row, col - 1))
     #east
-    if row + 1 < len(grid):
+    if row + 1 < len(grid) and grid[row + 1][col] and grid[row + 1][col].tile_type == None:
         list_of_next_coordinates.append((row + 1, col))
     #south
-    if col + 1 < len(grid[0]):
+    if col + 1 < len(grid[0]) and grid[row][col + 1] and grid[row][col + 1].tile_type == None:
         list_of_next_coordinates.append((row, col + 1))
     #west
-    if row - 1 >= 0:
+    if row - 1 >= 0 and grid[row - 1][col] and grid[row - 1][col].tile_type == None:
         list_of_next_coordinates.append((row - 1, col))
 
     return list_of_next_coordinates
