@@ -128,7 +128,10 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
             entropy = tile.get_entropy()
 
-
+            # From here: add the coordinates of the tiles with the lowest entropy 
+            if entropy < 3: # 3 is the highest entropy
+                list_of_low_entropy_coordinates.append(coordinate)
+        print(list_of_low_entropy_coordinates)
 
 def main():
     grid: list[list[Tile | None]] = [[Tile() for col in range(3)] for row in range(3)] # I learned that | means or, so I can make it a tile or none!
