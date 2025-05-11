@@ -122,24 +122,25 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
         for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
             row, col = coordinate
             tile: Tile | None = get_tile_from_coordinates(grid, row, col)
+            
+            if tile != None:
+                north_neighbor = get_tile_from_coordinates(grid, row, col - 1)
+                east_neighbor = get_tile_from_coordinates(grid, row + 1, col)
+                south_neighbor = get_tile_from_coordinates(grid, row, col + 1)
+                west_neighbor = get_tile_from_coordinates(grid, row - 1, col)
 
-            north_neighbor = get_tile_from_coordinates(grid, row, col - 1)
-            east_neighbor = get_tile_from_coordinates(grid, row + 1, col)
-            south_neighbor = get_tile_from_coordinates(grid, row, col + 1)
-            west_neighbor = get_tile_from_coordinates(grid, row - 1, col)
+                tile.set_available_tiles(north_neighbor, east_neighbor, south_neighbor, west_neighbor)
 
-            tile.set_available_tiles(north_neighbor, east_neighbor, south_neighbor, west_neighbor)
+                entropy = tile.get_entropy()
 
-            entropy = tile.get_entropy()
-
-            # From here: add the coordinates of the tiles with the lowest entropy
-            lowest_entropy = 3 # 3 is the highest entropy
-            if entropy < lowest_entropy: 
-                list_of_low_entropy_coordinates.clear() # removes the old coordinates that have higher entropy numbers
-                list_of_low_entropy_coordinates.append(coordinate)
-                lowest_entropy = entropy # Sets the lowest to the new entropy
-            elif entropy == lowest_entropy: # basically we need to try to get this down to 1 or 2
-                list_of_low_entropy_coordinates.append(coordinate)
+                # From here: add the coordinates of the tiles with the lowest entropy
+                lowest_entropy = 3 # 3 is the highest entropy
+                if entropy < lowest_entropy: 
+                    list_of_low_entropy_coordinates.clear() # removes the old coordinates that have higher entropy numbers
+                    list_of_low_entropy_coordinates.append(coordinate)
+                    lowest_entropy = entropy # Sets the lowest to the new entropy
+                elif entropy == lowest_entropy: # basically we need to try to get this down to 1 or 2
+                    list_of_low_entropy_coordinates.append(coordinate)
         
         # Pick a random coordinate fromm the list
         coordinate_to_move_to = random.choice(list_of_low_entropy_coordinates)
