@@ -1,6 +1,8 @@
 import pygame
 from enum import Enum
 import random
+import time
+import threading
 
 SCREEN_WIDTH = 1280 # weird numbers I know
 SCREEN_HEIGHT = 840 # TODO: Maybe calculate to be 720?
@@ -129,6 +131,7 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
     next_neighbor_coordinates: list[tuple[int, int]] = determine_next_neighbor_coordinates(grid, starting_row, starting_col)
 
     while next_neighbor_coordinates:
+        pygame.time.delay(50)
         list_of_low_entropy_coordinates: list[tuple[int,int]] = []
 
         for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
@@ -158,6 +161,7 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
         move_to_row, move_to_col = coordinate_to_move_to
         grid[move_to_row][move_to_col].pick_tile()
+        print_grid(grid, screen)
         next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
 
 class Panels:
@@ -192,14 +196,15 @@ class Button:
         
     
     def draw(self, screen):
-        pos = pygame.mouse.get_pos()
-        if self.rect.collidepoint(pos): # hovering over
-            if pygame.mouse.get_pressed()[0] and not self.clicked: # left mouse click. Middle is 1, and 2 is right
-                self.clicked = True
-                print("clicked")
-            if not pygame.mouse.get_pressed()[0]:
-                self.clicked = False
         screen.blit(self.img, (self.rect.x, self.rect.y))
+    
+    def get_rectangle(self):
+        return self.rect
+    
+    def click(self, grid, starting_row, starting_col, starting_tile, screen):
+        thread = threading.Thread(target=fill_grid, args=(grid, starting_row, starting_col, starting_tile, screen))
+        thread.start()
+        
 
 
 
@@ -235,8 +240,12 @@ def main():
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
     fps = 24
+    button = Button(800, 400)
 
-    #fill_grid(grid, 2, 2, TileType.WATER)
+
+
+    
+    #fill_grid(grid, 2, 2, TileType.WATER, screen)
     #print_grid(grid, screen)
 
 
@@ -248,8 +257,20 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button.get_rectangle().collidepoint(event.pos):
+                    print("click")
+                    button.click(grid, 2, 2, TileType.WATER, screen)
+                #clicked = False
+                #pos = pygame.mouse.get_pos()
+                #if button.get_rectangle().collidepoint(pos): # hovering over
+                 #   if pygame.mouse.get_pressed()[0] and not clicked: # left mouse click. Middle is 1, and 2 is right
+                  #      clicked = True
+                   #     print("clicked")
+                    #    fill_grid(grid, 2, 2, TileType.WATER, screen)
+                    #if not pygame.mouse.get_pressed()[0]:
+                     #   clicked = False
 
-            
 
         #backgrounds
         screen.fill(GRAY)
@@ -258,7 +279,8 @@ def main():
         #draw
         #draw_grid(screen)
         print_grid(grid, screen)
-        fill_grid(grid, 2, 2, TileType.WATER, screen)
+        #fill_grid(grid, 2, 2, TileType.WATER, screen)
+        button.draw(screen)
         
 
 
