@@ -117,7 +117,6 @@ def print_grid(grid: list[list[Tile | None]], screen):
             #x+=1
         #y+=1
         
-
 def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int, col: int):
     list_of_next_coordinates: list[tuple[int, int]] = []
     #north
@@ -211,8 +210,6 @@ class Panels:
         self.display_surface.blit(self.surface_left, (PADDING, PADDING*2)) # Purple in picture
         self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2)) # light blue in picture
 
-
-
 def draw_grid_lines(screen : pygame.Surface):
     for col in range(NUM_OF_ROWS_COLS + 1):
         x = (col * PIXEL_DIM_OF_TILE) + PADDING
@@ -244,23 +241,14 @@ class Button:
     def start_loop(self, grid: list[list[Tile | None]], starting_row:int, starting_col:int, starting_tile:TileType, speed: int):
         thread = threading.Thread(target=fill_grid, args=(grid, starting_row, starting_col, starting_tile, speed))
         thread.start()
-        
-
-
 
 def set_speed(slider_value: int) -> int:
     updated_value = (-1*slider_value) + 200
     return updated_value
 
-        
-
-
-
-
-
-
-
-
+def draw_text(screen, text, font, color, x, y):
+    img = font.render(text, True, color)
+    screen.blit(img, (x, y))
 
 
 def main():
@@ -279,6 +267,9 @@ def main():
 
 
     pygame.init()
+    label_font = pygame.font.SysFont("Arial", 30)
+    label2_font = pygame.font.SysFont("Lucida Handwriting", 30)
+
     pygame.display.set_caption("Wave Function Collapse")
     resolution = (SCREEN_WIDTH, SCREEN_HEIGHT)
     screen = pygame.display.set_mode(resolution)
@@ -361,6 +352,7 @@ def main():
         elif starting_tile == TileType.GRASS:
             pygame.draw.rect(screen, BLACK, (1050, 200, 64, 64), width = 5)
         pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working and why it's backward
+        draw_text(screen, "hello", label_font, BLACK, 400, 400)
 
 
         pygame_widgets.update(pygame.event.get())
