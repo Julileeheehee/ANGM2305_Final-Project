@@ -301,7 +301,7 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.get_rectangle().collidepoint(event.pos):
                     print("click")
-                    start_button.start_loop(grid, 2, 2, TileType.WATER, screen)
+                    start_button.start_loop(grid, starting_row, starting_col, TileType.WATER, screen)
                 if reset_button.get_rectangle().collidepoint(event.pos):
                     print("reset")
                     grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
@@ -329,7 +329,7 @@ def main():
         start_button.draw(screen)
         reset_button.draw(screen)
         #pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5)
-        pygame.draw.rect(screen, WHITE, (starting_col*PIXEL_DIM_OF_TILE + PADDING, starting_row*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working
+        pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working and why it's backward
 
 
         #get mouse pos and convert it to grid size
@@ -342,8 +342,8 @@ def main():
         
         if pos[0] < 640+PADDING and pos[1] < 640+ PADDING*2: # Keeps it within the space
             if pygame.mouse.get_pressed()[0]==1:
-                starting_row = x
-                starting_col = y
+                starting_col = x
+                starting_row = y
         
         print([starting_row, starting_col])
 
