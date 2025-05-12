@@ -4,7 +4,7 @@ from enum import Enum
 import random
 from typing import Self
 import threading
-import pygame_widgets #python -m pip install pygame-widgets
+import pygame_widgets
 from pygame_widgets.slider import Slider
 
 # Constants----------------------------------------------------------
