@@ -30,9 +30,9 @@ PIXEL_DIM_OF_TILE = 64
 SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 
 tileWeights = {
-    "WATER" : 6,
+    "WATER" : 3,
     "COAST" : 1,
-    "GRASS" : 3
+    "GRASS" : 6
 }
 
 
@@ -144,7 +144,7 @@ def get_tile_from_coordinates(grid : list[list[Tile|None]], row:int, col:int):
         return None
 
 def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType, screen):
-    is_grid_collapsed = False
+    #is_grid_collapsed = False
     #list_of_collapsed : list[tuple[int,int]] = []
     grid[starting_row][starting_col].tile_type = starting_tile
 
@@ -232,7 +232,7 @@ class Button:
     def get_rectangle(self):
         return self.rect
     
-    def click(self, grid: list[list[Tile | None]], starting_row:int, starting_col:int, starting_tile:TileType, screen:pygame.Surface):
+    def start_loop(self, grid: list[list[Tile | None]], starting_row:int, starting_col:int, starting_tile:TileType, screen:pygame.Surface):
         thread = threading.Thread(target=fill_grid, args=(grid, starting_row, starting_col, starting_tile, screen))
         thread.start()
         
@@ -271,7 +271,8 @@ def main():
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
     fps = 24
-    button = Button(800, 400)
+    start_button = Button(800, 400)
+    reset_button = Button(900, 400)
 
 
 
@@ -289,9 +290,12 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if button.get_rectangle().collidepoint(event.pos):
+                if start_button.get_rectangle().collidepoint(event.pos):
                     print("click")
-                    button.click(grid, 2, 2, TileType.WATER, screen)
+                    start_button.start_loop(grid, 2, 2, TileType.WATER, screen)
+                if reset_button.get_rectangle().collidepoint(event.pos):
+                    print("reset")
+                    grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
                 #clicked = False
                 #pos = pygame.mouse.get_pos()
                 #if button.get_rectangle().collidepoint(pos): # hovering over
@@ -311,7 +315,8 @@ def main():
         #draw_grid(screen)
         print_grid(grid, screen)
         #fill_grid(grid, 2, 2, TileType.WATER, screen)
-        button.draw(screen)
+        start_button.draw(screen)
+        reset_button.draw(screen)
         
 
 
