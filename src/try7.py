@@ -3,6 +3,9 @@ from enum import Enum
 import random
 from typing import Self
 import threading
+import pygame_widgets #python -m pip install pygame-widgets
+from pygame_widgets.slider import Slider
+from pygame_widgets.textbox import TextBox
 
 SCREEN_WIDTH = 1280 # weird numbers I know
 SCREEN_HEIGHT = 840 # TODO: Maybe calculate to be 720?
@@ -30,9 +33,9 @@ PIXEL_DIM_OF_TILE = 64
 SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 
 tileWeights = {
-    "WATER" : 3,
-    "COAST" : 1,
-    "GRASS" : 10
+    "WATER" : 1,
+    "COAST" : 0.1,
+    "GRASS" : 0.5
 }
 
 
@@ -143,7 +146,7 @@ def get_tile_from_coordinates(grid : list[list[Tile|None]], row:int, col:int):
     else:
         return None
 
-def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType, screen):
+def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType, speed: int):
     #is_grid_collapsed = False
     #list_of_collapsed : list[tuple[int,int]] = []
     grid[starting_row][starting_col].tile_type = starting_tile
@@ -153,7 +156,8 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
     next_neighbor_coordinates: list[tuple[int, int]] = determine_next_neighbor_coordinates(grid, starting_row, starting_col)
 
     while next_neighbor_coordinates:
-        pygame.time.delay(50)
+        if speed != 0:
+            pygame.time.delay(speed)
         list_of_low_entropy_coordinates: list[tuple[int,int]] = []
 
         for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
@@ -182,7 +186,6 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
         
         if list_of_low_entropy_coordinates:
-            print("not done")
             coordinate_to_move_to = random.choice(list_of_low_entropy_coordinates)
             next_neighbor_coordinates.remove(coordinate_to_move_to)
 
@@ -192,7 +195,6 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
             #print_grid(grid, screen)
             next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
         else:
-            print("done")
             return
 
 class Panels:
@@ -239,14 +241,16 @@ class Button:
     def get_rectangle(self):
         return self.rect
     
-    def start_loop(self, grid: list[list[Tile | None]], starting_row:int, starting_col:int, starting_tile:TileType, screen:pygame.Surface):
-        thread = threading.Thread(target=fill_grid, args=(grid, starting_row, starting_col, starting_tile, screen))
+    def start_loop(self, grid: list[list[Tile | None]], starting_row:int, starting_col:int, starting_tile:TileType, speed: int):
+        thread = threading.Thread(target=fill_grid, args=(grid, starting_row, starting_col, starting_tile, speed))
         thread.start()
         
 
 
 
-
+def set_speed(slider_value: int) -> int:
+    updated_value = (-1*slider_value) + 200
+    return updated_value
 
         
 
@@ -269,6 +273,7 @@ def main():
     starting_col = 2
     #outline = pygame.draw.rect(screen, WHITE, (starting_row, starting_col, 64, 64), width = 2)
     starting_tile = TileType.WATER
+    speed = 100
 
     
 
@@ -284,6 +289,10 @@ def main():
     water_button = Button(900, 200, "images/3-tiles/water_tile.png")
     coast_button = Button(975, 200, "images/3-tiles/coastline_tile.png")
     grass_button = Button(1050, 200, "images/3-tiles/grass_tile.png")
+
+
+
+    slider = Slider(screen, x=850, y=500, width=300, height=30, min=0, max=200, step=50)
     
 
 
@@ -304,7 +313,7 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.get_rectangle().collidepoint(event.pos):
                     print("click")
-                    start_button.start_loop(grid, starting_row, starting_col, starting_tile, screen)
+                    start_button.start_loop(grid, starting_row, starting_col, starting_tile, speed)
                 if reset_button.get_rectangle().collidepoint(event.pos):
                     print("reset")
                     grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
@@ -331,6 +340,7 @@ def main():
         #backgrounds
         screen.fill(GRAY)
         panels.update()
+        
 
         #draw
         #draw_grid(screen)
@@ -353,6 +363,11 @@ def main():
         pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working and why it's backward
 
 
+        pygame_widgets.update(pygame.event.get())
+        #pygame.display.update()
+        speed = set_speed(slider.getValue())
+
+
         #get mouse pos and convert it to grid size
         pos = pygame.mouse.get_pos()
         x = (pos[1] - PADDING*2)//PIXEL_DIM_OF_TILE
@@ -361,7 +376,7 @@ def main():
 
         #print([x,y])
         
-        if pos[0] < 640+PADDING and pos[1] < 640+ PADDING*2: # Keeps it within the space
+        if PADDING < pos[0] < 640+PADDING and PADDING*2 < pos[1] < 640+ PADDING*2: # Keeps it within the space
             if pygame.mouse.get_pressed()[0]==1:
                 starting_col = x
                 starting_row = y
