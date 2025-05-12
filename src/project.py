@@ -1,11 +1,15 @@
 # Imports-----------------------------------------------------------
+# 3rd party
 import pygame
+import pygame_widgets #python -m pip install pygame-widgets
+from pygame_widgets.slider import Slider
+
+# Built-in
 from enum import Enum
 import random
 from typing import Self
 import threading
-import pygame_widgets
-from pygame_widgets.slider import Slider
+
 
 # Constants----------------------------------------------------------
 SCREEN_WIDTH = 1280
