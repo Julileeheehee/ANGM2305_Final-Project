@@ -29,7 +29,11 @@ NUM_OF_ROWS_COLS = 10
 PIXEL_DIM_OF_TILE = 64
 SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 
-
+tileWeights = {
+    "WATER" : 6,
+    "COAST" : 1,
+    "GRASS" : 3
+}
 
 
 
@@ -78,8 +82,14 @@ class Tile:
         #    return False
     
     def pick_tile(self):
-        self.tile_type = random.choice(list(self.available_tiles))
-        self.is_tile_changed = True
+        weight = [tileWeights[possibility.name] for possibility in self.available_tiles]
+        #print(weight)
+        #self.tile_type = random.choice(list(self.available_tiles))
+        #print(self.tile_type)
+        self.tile_type = random.choices(list(self.available_tiles), weights=weight)
+        self.tile_type = self.tile_type[0]
+        #self.tile_type = random.choice(list(self.available_tiles))
+        #self.is_tile_changed = True
         self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
     def get_tile_image(self):
@@ -107,11 +117,6 @@ def print_grid(grid: list[list[Tile | None]], screen):
 
 def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int, col: int):
     list_of_next_coordinates: list[tuple[int, int]] = []
-    
-    
-    
-    
-    
     #north
     if col - 1 >= 0 and grid[row][col - 1] and grid[row][col - 1].tile_type == None:
         #print(grid[row][col - 1].tile_type)
@@ -148,7 +153,7 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
     next_neighbor_coordinates: list[tuple[int, int]] = determine_next_neighbor_coordinates(grid, starting_row, starting_col)
 
     while next_neighbor_coordinates:
-        pygame.time.delay(200)
+        pygame.time.delay(50)
         list_of_low_entropy_coordinates: list[tuple[int,int]] = []
 
         for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
