@@ -272,8 +272,9 @@ def main():
 
 
     pygame.init()
-    label_font = pygame.font.SysFont("Lucida Handwriting", 40)
-    label2_font = pygame.font.SysFont("Lucida Handwriting", 30)
+    pygame.font.init()
+    label_font = pygame.font.Font("Juliette_handwritting-Regular.ttf", 45)
+    #label2_font = pygame.font.SysFont("Lucida Handwriting", 30)
 
     pygame.display.set_caption("Wave Function Collapse")
     resolution = (SCREEN_WIDTH, SCREEN_HEIGHT)
