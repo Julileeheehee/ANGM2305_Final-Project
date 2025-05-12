@@ -265,8 +265,8 @@ def main():
     grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
     #print_grid(grid)
 
-    #starting_row = int(input(f"Row? (0-{num_of_rows}): "))
-    #starting_col = int(input(f"Col? (0-{num_of_cols}): "))
+    starting_row = 2
+    starting_col = 2
     #starting_tile = TileType(input("Tile? (W, C, G): "))
 
     
@@ -329,9 +329,18 @@ def main():
 
         #get mouse pos and convert it to grid size
         pos = pygame.mouse.get_pos()
-        x = (pos[0] - PADDING)//PIXEL_DIM_OF_TILE
-        y = (pos[1] - PADDING*2)//PIXEL_DIM_OF_TILE
-        print([x,y])
+        y = (pos[0] - PADDING)//PIXEL_DIM_OF_TILE
+        x = (pos[1] - PADDING*2)//PIXEL_DIM_OF_TILE
+
+        #print([x,y])
+        
+        if pos[0] < 640+PADDING and pos[1] < 640+ PADDING*2:
+            if pygame.mouse.get_pressed()[0]==1:
+                starting_row = x
+                starting_col = y
+        
+        print([starting_row, starting_col])
+
 
         
 
