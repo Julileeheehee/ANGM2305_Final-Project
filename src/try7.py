@@ -74,7 +74,8 @@ class Tile:
         self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
     def get_tile_image(self):
-        return self.img
+
+        return pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
 def print_grid(grid: list[list[Tile | None]], screen):
     #print_text = "Printing the grid:"
@@ -121,7 +122,7 @@ def get_tile_from_coordinates(grid, row, col):
     else:
         return None
 
-def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType):
+def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType, screen):
     #is_grid_collapsed = False
     grid[starting_row][starting_col].tile_type = starting_tile
 
@@ -157,7 +158,6 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
 
         move_to_row, move_to_col = coordinate_to_move_to
         grid[move_to_row][move_to_col].pick_tile()
-
         next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
 
 class Panels:
@@ -258,6 +258,7 @@ def main():
         #draw
         #draw_grid(screen)
         print_grid(grid, screen)
+        fill_grid(grid, 2, 2, TileType.WATER, screen)
         
 
 
