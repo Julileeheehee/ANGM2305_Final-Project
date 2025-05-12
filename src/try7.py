@@ -32,13 +32,19 @@ SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 
 
 class TileType(Enum):
-    COAST = 'C'
-    GRASS = 'G'
+    WATER = 'images/3-tiles/water_tile.png'
+    COAST = 'images/3-tiles/coastline_tile.png'
+    GRASS = 'images/3-tiles/grass_tile.png'
 
 class Tile:
     def __init__(self):
+        self.null_state = pygame.transform.scale(pygame.image.load('images/3-tiles/blank_tile.png'), (64, 64))
         self.tile_type : TileType | None = None
         self.available_tiles: set[TileType] = set()
+        self.img = self.null_state
+        #self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
+        self.rect = self.img.get_rect()
+        self.is_tile_changed = False
 
     def set_available_tiles(self, north_neighbor, east_neighbor, south_neighbor, west_neighbor):
         for tile_type in TileType:
@@ -64,20 +70,31 @@ class Tile:
     
     def pick_tile(self):
         self.tile_type = random.choice(list(self.available_tiles))
+        self.is_tile_changed = True
+        self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
-def print_grid(grid: list[list[Tile | None]]):
-    print_text = "Printing the grid:"
-    print(print_text)
-    print('-' * len(print_text))
+    def get_tile_image(self):
+        return self.img
 
-    for col in grid:
-        for row in col:
-            if row.tile_type: # if it exists/not None
-                print(row.tile_type.value, end=" ")
+def print_grid(grid: list[list[Tile | None]], screen):
+    #print_text = "Printing the grid:"
+    #print(print_text)
+    #print('-' * len(print_text))
+    null_state = pygame.transform.scale(pygame.image.load('images/3-tiles/blank_tile.png'), (64, 64))
+
+
+    ##### This is ugly and def hardcoded
+    y = 1
+    for row in grid:
+        x = 1
+        for col in row:
+            if col.tile_type: # if it exists/not None
+                screen.blit(col.get_tile_image(), (x*64, y*64))
             else:
-                print("-", end=" ")
-        print()
-    print()
+                screen.blit(null_state, (x*64, y*64))
+            x+=1
+        y+=1
+        
 
 def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int, col: int):
     list_of_next_coordinates: list[tuple[int, int]] = []
@@ -177,9 +194,9 @@ class Button:
     def draw(self, screen):
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos): # hovering over
-            print(f"hover point: {pos}" )
             if pygame.mouse.get_pressed()[0] and not self.clicked: # left mouse click. Middle is 1, and 2 is right
                 self.clicked = True
+                print("clicked")
             if not pygame.mouse.get_pressed()[0]:
                 self.clicked = False
         screen.blit(self.img, (self.rect.x, self.rect.y))
@@ -202,15 +219,14 @@ class Button:
 def main():
     #num_of_rows = int(input("How many rows would you like?: "))
     #num_of_cols = int(input("How many columns would you like?: "))
-    #grid: list[list[Tile | None]] = [[Tile() for col in range(num_of_cols)] for row in range(num_of_rows)]
+    grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
     #print_grid(grid)
 
     #starting_row = int(input(f"Row? (0-{num_of_rows}): "))
     #starting_col = int(input(f"Col? (0-{num_of_cols}): "))
     #starting_tile = TileType(input("Tile? (W, C, G): "))
 
-    #fill_grid(grid, starting_row, starting_col, starting_tile)
-    #print_grid(grid
+    
 
 
     pygame.init()
@@ -219,6 +235,9 @@ def main():
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
     fps = 24
+
+    #fill_grid(grid, 2, 2, TileType.WATER)
+    #print_grid(grid, screen)
 
 
     panels = Panels()
@@ -238,10 +257,7 @@ def main():
 
         #draw
         #draw_grid(screen)
-        for row in range(NUM_OF_ROWS_COLS):
-            for col in range(NUM_OF_ROWS_COLS):
-                button = Button(row*64, col*64)
-                button.draw(screen)
+        print_grid(grid, screen)
         
 
 
