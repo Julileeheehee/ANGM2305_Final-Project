@@ -5,7 +5,7 @@ from typing import Self
 import threading
 import pygame_widgets #python -m pip install pygame-widgets
 from pygame_widgets.slider import Slider
-from pygame_widgets.textbox import TextBox
+
 
 SCREEN_WIDTH = 1280 # weird numbers I know
 SCREEN_HEIGHT = 840 # TODO: Maybe calculate to be 720?
@@ -13,6 +13,7 @@ SCREEN_HEIGHT = 840 # TODO: Maybe calculate to be 720?
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (77, 77, 77)
+
 
 # grid/panel sizes
 
@@ -25,6 +26,7 @@ PANEL_HEIGHT = 640
 
 PADDING = 50
 
+
 # Columns and Rows for the grid
 #TODO: Make these numbers adjustable later
 NUM_OF_ROWS_COLS = 10
@@ -33,7 +35,7 @@ PIXEL_DIM_OF_TILE = 64
 SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 
 tileWeights = {
-    "WATER" : 1,
+    "WATER" : 0.5,
     "COAST" : 0.1,
     "GRASS" : 0.5
 }
@@ -226,7 +228,7 @@ def draw_grid_lines(screen : pygame.Surface):
 
 class Button:
     def __init__(self, x:int, y:int, image: str):
-        self.img = pygame.transform.scale(pygame.image.load(image), (64, 64))
+        self.img = (pygame.image.load(image))
         self.rect = self.img.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
@@ -248,8 +250,11 @@ def set_speed(slider_value: int) -> int:
 
 def draw_text(screen, text, font, color, x, y):
     img = font.render(text, True, color)
-    screen.blit(img, (x, y))
+    text_rect = img.get_rect(center=(x, y)) # Buffer is the distance from the center of the window
+    screen.blit(img, text_rect)
 
+def draw_right_panel(screen):
+    pass
 
 def main():
     #num_of_rows = int(input("How many rows would you like?: "))
@@ -267,7 +272,7 @@ def main():
 
 
     pygame.init()
-    label_font = pygame.font.SysFont("Arial", 30)
+    label_font = pygame.font.SysFont("Lucida Handwriting", 40)
     label2_font = pygame.font.SysFont("Lucida Handwriting", 30)
 
     pygame.display.set_caption("Wave Function Collapse")
@@ -275,23 +280,13 @@ def main():
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
     fps = 24
-    start_button = Button(800, 400, "images/3-tiles/blank_tile.png")
-    reset_button = Button(900, 400, "images/3-tiles/blank_tile.png")
-    water_button = Button(900, 200, "images/3-tiles/water_tile.png")
-    coast_button = Button(975, 200, "images/3-tiles/coastline_tile.png")
-    grass_button = Button(1050, 200, "images/3-tiles/grass_tile.png")
+    solve_button = Button(921, 530, "images/3-tiles/solve_button.png")
+    reset_button = Button(921, 626, "images/3-tiles/reset_button.png")
+    water_button = Button(847, 242, "images/3-tiles/water_tile.png")
+    coast_button = Button(953, 242, "images/3-tiles/coastline_tile.png")
+    grass_button = Button(1059, 242, "images/3-tiles/grass_tile.png")
 
-
-
-    slider = Slider(screen, x=850, y=500, width=300, height=30, min=0, max=200, step=50)
-    
-
-
-
-    
-    #fill_grid(grid, 2, 2, TileType.WATER, screen)
-    #print_grid(grid, screen)
-
+    slider = Slider(screen, x=835, y=442, width=300, height=20, min=0, max=200, step=50)
 
     panels = Panels()
     
@@ -302,9 +297,9 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if start_button.get_rectangle().collidepoint(event.pos):
+                if solve_button.get_rectangle().collidepoint(event.pos):
                     print("click")
-                    start_button.start_loop(grid, starting_row, starting_col, starting_tile, speed)
+                    solve_button.start_loop(grid, starting_row, starting_col, starting_tile, speed)
                 if reset_button.get_rectangle().collidepoint(event.pos):
                     print("reset")
                     grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
@@ -339,20 +334,22 @@ def main():
         print_grid(grid, screen)
         draw_grid_lines(screen)
         #fill_grid(grid, 2, 2, TileType.WATER, screen)
-        start_button.draw(screen)
+        solve_button.draw(screen)
         reset_button.draw(screen)
         water_button.draw(screen)
         coast_button.draw(screen)
         grass_button.draw(screen)
         #pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5)
         if starting_tile == TileType.WATER:
-            pygame.draw.rect(screen, BLACK, (900, 200, 64, 64), width = 5)
+            pygame.draw.rect(screen, BLACK, (847, 242, 64, 64), width = 5)
         elif starting_tile == TileType.COAST:
-            pygame.draw.rect(screen, BLACK, (975, 200, 64, 64), width = 5)
+            pygame.draw.rect(screen, BLACK, (953, 242, 64, 64), width = 5)
         elif starting_tile == TileType.GRASS:
-            pygame.draw.rect(screen, BLACK, (1050, 200, 64, 64), width = 5)
+            pygame.draw.rect(screen, BLACK, (1059, 242, 64, 64), width = 5)
         pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working and why it's backward
-        draw_text(screen, "hello", label_font, BLACK, 400, 400)
+        draw_text(screen, "Pick first tile type", label_font, BLACK, 985, 185)
+        draw_text(screen, "Speed", label_font, BLACK, 985, 385)
+        draw_text(screen, "Pick first tile location", label_font, WHITE, 370, 60)
 
 
         pygame_widgets.update(pygame.event.get())
