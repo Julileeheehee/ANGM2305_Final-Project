@@ -32,7 +32,7 @@ SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 tileWeights = {
     "WATER" : 3,
     "COAST" : 1,
-    "GRASS" : 6
+    "GRASS" : 10
 }
 
 
@@ -226,8 +226,8 @@ def draw_grid_lines(screen : pygame.Surface):
        #     pygame.draw.rect(screen, BLACK, rect, 2)
 
 class Button:
-    def __init__(self, x:int, y:int):
-        self.img = pygame.transform.scale(pygame.image.load("images/3-tiles/blank_tile.png"), (64, 64))
+    def __init__(self, x:int, y:int, image: str):
+        self.img = pygame.transform.scale(pygame.image.load(image), (64, 64))
         self.rect = self.img.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
@@ -268,7 +268,7 @@ def main():
     starting_row = 2
     starting_col = 2
     #outline = pygame.draw.rect(screen, WHITE, (starting_row, starting_col, 64, 64), width = 2)
-    #starting_tile = TileType(input("Tile? (W, C, G): "))
+    starting_tile = TileType.WATER
 
     
 
@@ -279,8 +279,11 @@ def main():
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
     fps = 24
-    start_button = Button(800, 400)
-    reset_button = Button(900, 400)
+    start_button = Button(800, 400, "images/3-tiles/blank_tile.png")
+    reset_button = Button(900, 400, "images/3-tiles/blank_tile.png")
+    water_button = Button(900, 200, "images/3-tiles/water_tile.png")
+    coast_button = Button(975, 200, "images/3-tiles/coastline_tile.png")
+    grass_button = Button(1050, 200, "images/3-tiles/grass_tile.png")
     
 
 
@@ -301,10 +304,19 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.get_rectangle().collidepoint(event.pos):
                     print("click")
-                    start_button.start_loop(grid, starting_row, starting_col, TileType.WATER, screen)
+                    start_button.start_loop(grid, starting_row, starting_col, starting_tile, screen)
                 if reset_button.get_rectangle().collidepoint(event.pos):
                     print("reset")
                     grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
+                if water_button.get_rectangle().collidepoint(event.pos):
+                    starting_tile = TileType.WATER
+                    pygame.draw.rect(screen, BLACK, (900, 200, 64, 64), width = 5)
+                if coast_button.get_rectangle().collidepoint(event.pos):
+                    starting_tile = TileType.COAST
+                    pygame.draw.rect(screen, BLACK, (975, 200, 64, 64), width = 5)
+                if grass_button.get_rectangle().collidepoint(event.pos):
+                    starting_tile = TileType.GRASS
+                    pygame.draw.rect(screen, BLACK, (1050, 200, 64, 64), width = 5)
                 #clicked = False
                 #pos = pygame.mouse.get_pos()
                 #if button.get_rectangle().collidepoint(pos): # hovering over
@@ -328,7 +340,16 @@ def main():
         #fill_grid(grid, 2, 2, TileType.WATER, screen)
         start_button.draw(screen)
         reset_button.draw(screen)
+        water_button.draw(screen)
+        coast_button.draw(screen)
+        grass_button.draw(screen)
         #pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5)
+        if starting_tile == TileType.WATER:
+            pygame.draw.rect(screen, BLACK, (900, 200, 64, 64), width = 5)
+        elif starting_tile == TileType.COAST:
+            pygame.draw.rect(screen, BLACK, (975, 200, 64, 64), width = 5)
+        elif starting_tile == TileType.GRASS:
+            pygame.draw.rect(screen, BLACK, (1050, 200, 64, 64), width = 5)
         pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working and why it's backward
 
 
@@ -345,7 +366,6 @@ def main():
                 starting_col = x
                 starting_row = y
         
-        print([starting_row, starting_col])
 
 
         
