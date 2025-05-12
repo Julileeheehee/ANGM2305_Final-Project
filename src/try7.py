@@ -1,7 +1,7 @@
 import pygame
 from enum import Enum
 import random
-import time
+from typing import Self
 import threading
 
 SCREEN_WIDTH = 1280 # weird numbers I know
@@ -46,9 +46,10 @@ class Tile:
         self.img = self.null_state
         #self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
         self.rect = self.img.get_rect()
-        self.is_tile_changed = False
+        #self.is_tile_changed = False
+        #self.collapsed = self.is_collapsed()
 
-    def set_available_tiles(self, north_neighbor, east_neighbor, south_neighbor, west_neighbor):
+    def set_available_tiles(self, north_neighbor: Self | None=None , east_neighbor: Self|None=None, south_neighbor:Self|None=None, west_neighbor:Self|None=None):
         for tile_type in TileType:
             self.available_tiles.add(tile_type)
         
@@ -57,7 +58,7 @@ class Tile:
         self.update_tiles_from_neighbor(south_neighbor)
         self.update_tiles_from_neighbor(west_neighbor)
     
-    def update_tiles_from_neighbor(self, neighbor):
+    def update_tiles_from_neighbor(self, neighbor: Self|None):
         #checks if these exist and are not None
         if neighbor and neighbor.tile_type: 
             if neighbor.tile_type == TileType.WATER:
@@ -69,6 +70,12 @@ class Tile:
     
     def get_entropy(self):
         return len(self.available_tiles)
+
+    #def is_collapsed(self):
+     #   if self.get_entropy() == 1:
+      #      return True
+       # else:
+        #    return False
     
     def pick_tile(self):
         self.tile_type = random.choice(list(self.available_tiles))
@@ -76,7 +83,6 @@ class Tile:
         self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
     def get_tile_image(self):
-
         return pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
 def print_grid(grid: list[list[Tile | None]], screen):
@@ -102,22 +108,30 @@ def print_grid(grid: list[list[Tile | None]], screen):
 def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int, col: int):
     list_of_next_coordinates: list[tuple[int, int]] = []
     
+    
+    
+    
+    
     #north
     if col - 1 >= 0 and grid[row][col - 1] and grid[row][col - 1].tile_type == None:
+        #print(grid[row][col - 1].tile_type)
         list_of_next_coordinates.append((row, col - 1))
     #east
     if row + 1 < len(grid) and grid[row + 1][col] and grid[row + 1][col].tile_type == None:
+        #print(grid[row + 1][col].tile_type)
         list_of_next_coordinates.append((row + 1, col))
     #south
     if col + 1 < len(grid[0]) and grid[row][col + 1] and grid[row][col + 1].tile_type == None:
+        #print(grid[row][col + 1].tile_type)
         list_of_next_coordinates.append((row, col + 1))
     #west
     if row - 1 >= 0 and grid[row - 1][col] and grid[row - 1][col].tile_type == None:
+        #print(grid[row - 1][col].tile_type)
         list_of_next_coordinates.append((row - 1, col))
 
     return list_of_next_coordinates
 
-def get_tile_from_coordinates(grid, row, col):
+def get_tile_from_coordinates(grid : list[list[Tile|None]], row:int, col:int):
     # check if the grid at the coordinate is not out of bounds
     if 0 <= row < len(grid) and 0 <= col < len(grid[0]):
         return grid[row][col]
@@ -125,44 +139,56 @@ def get_tile_from_coordinates(grid, row, col):
         return None
 
 def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType, screen):
-    #is_grid_collapsed = False
+    is_grid_collapsed = False
+    #list_of_collapsed : list[tuple[int,int]] = []
     grid[starting_row][starting_col].tile_type = starting_tile
+
+    #list_of_collapsed.append([starting_row, starting_col])
 
     next_neighbor_coordinates: list[tuple[int, int]] = determine_next_neighbor_coordinates(grid, starting_row, starting_col)
 
     while next_neighbor_coordinates:
-        pygame.time.delay(50)
+        pygame.time.delay(200)
         list_of_low_entropy_coordinates: list[tuple[int,int]] = []
 
         for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
             row, col = coordinate
             tile: Tile | None = get_tile_from_coordinates(grid, row, col)
-            
+                
             if tile != None:
                 north_neighbor = get_tile_from_coordinates(grid, row, col - 1)
                 east_neighbor = get_tile_from_coordinates(grid, row + 1, col)
                 south_neighbor = get_tile_from_coordinates(grid, row, col + 1)
                 west_neighbor = get_tile_from_coordinates(grid, row - 1, col)
-
                 tile.set_available_tiles(north_neighbor, east_neighbor, south_neighbor, west_neighbor)
-
+            
                 entropy = tile.get_entropy()
 
-                lowest_entropy = 3 # 3 is the highest entropy
-                if entropy < lowest_entropy: 
-                    list_of_low_entropy_coordinates.clear()
-                    list_of_low_entropy_coordinates.append(coordinate)
-                    lowest_entropy = entropy
-                elif entropy == lowest_entropy:
-                    list_of_low_entropy_coordinates.append(coordinate)
-        
-        coordinate_to_move_to = random.choice(list_of_low_entropy_coordinates)
-        next_neighbor_coordinates.remove(coordinate_to_move_to)
+                if grid[row][col].tile_type ==None:
+                    lowest_entropy = 3 # 3 is the highest entropy
+                    if entropy < lowest_entropy: 
+                        list_of_low_entropy_coordinates.clear()
+                        list_of_low_entropy_coordinates.append(coordinate)
+                        lowest_entropy = entropy
+                    elif entropy == lowest_entropy:
+                        list_of_low_entropy_coordinates.append(coordinate)
 
-        move_to_row, move_to_col = coordinate_to_move_to
-        grid[move_to_row][move_to_col].pick_tile()
-        print_grid(grid, screen)
-        next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
+                        
+
+        
+        if list_of_low_entropy_coordinates:
+            print("not done")
+            coordinate_to_move_to = random.choice(list_of_low_entropy_coordinates)
+            next_neighbor_coordinates.remove(coordinate_to_move_to)
+
+            move_to_row, move_to_col = coordinate_to_move_to
+            #list_of_collapsed.append([move_to_row, move_to_col])
+            grid[move_to_row][move_to_col].pick_tile()
+            #print_grid(grid, screen)
+            next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
+        else:
+            print("done")
+            return
 
 class Panels:
     def __init__(self):
@@ -180,7 +206,7 @@ class Panels:
 
 
 
-def draw_grid(screen):
+def draw_grid(screen : pygame.Surface):
     tile_size = GRID_WIDTH//3
     for row in range(0, GRID_WIDTH - 1, tile_size):
         for col in range(0, GRID_HEIGHT - 1, tile_size):
@@ -188,20 +214,20 @@ def draw_grid(screen):
             pygame.draw.rect(screen, BLACK, rect, 2)
 
 class Button:
-    def __init__(self, x, y):
+    def __init__(self, x:int, y:int):
         self.img = pygame.transform.scale(pygame.image.load("images/3-tiles/blank_tile.png"), (64*0.99, 64*0.99))
         self.rect = self.img.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
         
     
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         screen.blit(self.img, (self.rect.x, self.rect.y))
     
     def get_rectangle(self):
         return self.rect
     
-    def click(self, grid, starting_row, starting_col, starting_tile, screen):
+    def click(self, grid: list[list[Tile | None]], starting_row:int, starting_col:int, starting_tile:TileType, screen:pygame.Surface):
         thread = threading.Thread(target=fill_grid, args=(grid, starting_row, starting_col, starting_tile, screen))
         thread.start()
         
