@@ -267,6 +267,7 @@ def main():
 
     starting_row = 2
     starting_col = 2
+    #outline = pygame.draw.rect(screen, WHITE, (starting_row, starting_col, 64, 64), width = 2)
     #starting_tile = TileType(input("Tile? (W, C, G): "))
 
     
@@ -280,6 +281,7 @@ def main():
     fps = 24
     start_button = Button(800, 400)
     reset_button = Button(900, 400)
+    
 
 
 
@@ -320,21 +322,25 @@ def main():
 
         #draw
         #draw_grid(screen)
+        #pygame.draw.rect(screen, WHITE, (starting_row + PADDING*2, starting_col + PADDING, 64, 64), width = 5)
         print_grid(grid, screen)
         draw_grid_lines(screen)
         #fill_grid(grid, 2, 2, TileType.WATER, screen)
         start_button.draw(screen)
         reset_button.draw(screen)
+        #pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5)
+        pygame.draw.rect(screen, WHITE, (starting_col*PIXEL_DIM_OF_TILE + PADDING, starting_row*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working
 
 
         #get mouse pos and convert it to grid size
         pos = pygame.mouse.get_pos()
-        y = (pos[0] - PADDING)//PIXEL_DIM_OF_TILE
         x = (pos[1] - PADDING*2)//PIXEL_DIM_OF_TILE
+        y = (pos[0] - PADDING)//PIXEL_DIM_OF_TILE
+        
 
         #print([x,y])
         
-        if pos[0] < 640+PADDING and pos[1] < 640+ PADDING*2:
+        if pos[0] < 640+PADDING and pos[1] < 640+ PADDING*2: # Keeps it within the space
             if pygame.mouse.get_pressed()[0]==1:
                 starting_row = x
                 starting_col = y
