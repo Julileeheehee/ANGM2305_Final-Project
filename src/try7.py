@@ -1,3 +1,4 @@
+# Imports-----------------------------------------------------------
 import pygame
 from enum import Enum
 import random
@@ -6,41 +7,31 @@ import threading
 import pygame_widgets #python -m pip install pygame-widgets
 from pygame_widgets.slider import Slider
 
-
-SCREEN_WIDTH = 1280 # weird numbers I know
+# Constants----------------------------------------------------------
+SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 840 # TODO: Maybe calculate to be 720?
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (77, 77, 77)
 
-
-# grid/panel sizes
-
-# TODO: Make these numbers adjustable
+# TODO: Make these numbers adjustable in the future
 GRID_WIDTH = 640
 GRID_HEIGHT = 640
-
 PANEL_WIDTH = 490
 PANEL_HEIGHT = 640
-
 PADDING = 50
 
-
-# Columns and Rows for the grid
 #TODO: Make these numbers adjustable later
 NUM_OF_ROWS_COLS = 10
-
 PIXEL_DIM_OF_TILE = 64
-SCALE = (640/NUM_OF_ROWS_COLS)/PIXEL_DIM_OF_TILE
 
+# Water and Grass are equally chosen, but these values can change to produce a higher likelihood of picking a specific tile
 tileWeights = {
     "WATER" : 0.5,
     "COAST" : 0.1,
     "GRASS" : 0.5
 }
-
-
 
 class TileType(Enum):
     WATER = 'images/3-tiles/water_tile.png'
@@ -53,10 +44,6 @@ class Tile:
         self.tile_type : TileType | None = None
         self.available_tiles: set[TileType] = set()
         self.img = self.null_state
-        #self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
-        self.rect = self.img.get_rect()
-        #self.is_tile_changed = False
-        #self.collapsed = self.is_collapsed()
 
     def set_available_tiles(self, north_neighbor: Self | None=None , east_neighbor: Self|None=None, south_neighbor:Self|None=None, west_neighbor:Self|None=None):
         for tile_type in TileType:
@@ -68,7 +55,6 @@ class Tile:
         self.update_tiles_from_neighbor(west_neighbor)
     
     def update_tiles_from_neighbor(self, neighbor: Self|None):
-        #checks if these exist and are not None
         if neighbor and neighbor.tile_type: 
             if neighbor.tile_type == TileType.WATER:
                 self.available_tiles &= set([TileType.WATER, TileType.COAST])
@@ -79,63 +65,39 @@ class Tile:
     
     def get_entropy(self):
         return len(self.available_tiles)
-
-    #def is_collapsed(self):
-     #   if self.get_entropy() == 1:
-      #      return True
-       # else:
-        #    return False
     
     def pick_tile(self):
         weight = [tileWeights[possibility.name] for possibility in self.available_tiles]
-        #print(weight)
-        #self.tile_type = random.choice(list(self.available_tiles))
-        #print(self.tile_type)
         self.tile_type = random.choices(list(self.available_tiles), weights=weight)
         self.tile_type = self.tile_type[0]
-        #self.tile_type = random.choice(list(self.available_tiles))
-        #self.is_tile_changed = True
         self.img = pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
     def get_tile_image(self):
         return pygame.transform.scale(pygame.image.load(self.tile_type.value), (64, 64))
 
 def print_grid(grid: list[list[Tile | None]], screen):
-    #print_text = "Printing the grid:"
-    #print(print_text)
-    #print('-' * len(print_text))
     null_state = pygame.transform.scale(pygame.image.load('images/3-tiles/blank_tile.png'), (64, 64))
 
-
-    ##### This is ugly and def hardcoded
-    #y = 1
     for row in range(len(grid)):
-        #x = 1
         for col in range(len(grid[0])):
-            if grid[row][col].tile_type: # if it exists/not None
+            if grid[row][col].tile_type:
                 screen.blit(grid[row][col].get_tile_image(), (row*64 + PADDING, col*64 + PADDING*2))
             else:
                 screen.blit(null_state, (row*64 + PADDING, col*64 + PADDING*2))
-            #x+=1
-        #y+=1
-        
+  
 def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int, col: int):
     list_of_next_coordinates: list[tuple[int, int]] = []
     #north
     if col - 1 >= 0 and grid[row][col - 1] and grid[row][col - 1].tile_type == None:
-        #print(grid[row][col - 1].tile_type)
         list_of_next_coordinates.append((row, col - 1))
     #east
     if row + 1 < len(grid) and grid[row + 1][col] and grid[row + 1][col].tile_type == None:
-        #print(grid[row + 1][col].tile_type)
         list_of_next_coordinates.append((row + 1, col))
     #south
     if col + 1 < len(grid[0]) and grid[row][col + 1] and grid[row][col + 1].tile_type == None:
-        #print(grid[row][col + 1].tile_type)
         list_of_next_coordinates.append((row, col + 1))
     #west
     if row - 1 >= 0 and grid[row - 1][col] and grid[row - 1][col].tile_type == None:
-        #print(grid[row - 1][col].tile_type)
         list_of_next_coordinates.append((row - 1, col))
 
     return list_of_next_coordinates
@@ -148,12 +110,7 @@ def get_tile_from_coordinates(grid : list[list[Tile|None]], row:int, col:int):
         return None
 
 def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: int, starting_tile: TileType, speed: int):
-    #is_grid_collapsed = False
-    #list_of_collapsed : list[tuple[int,int]] = []
     grid[starting_row][starting_col].tile_type = starting_tile
-
-    #list_of_collapsed.append([starting_row, starting_col])
-
     next_neighbor_coordinates: list[tuple[int, int]] = determine_next_neighbor_coordinates(grid, starting_row, starting_col)
 
     while next_neighbor_coordinates:
@@ -161,7 +118,7 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
             pygame.time.delay(speed)
         list_of_low_entropy_coordinates: list[tuple[int,int]] = []
 
-        for coordinate in next_neighbor_coordinates: # coordinate should be a tuple(x,y)
+        for coordinate in next_neighbor_coordinates:
             row, col = coordinate
             tile: Tile | None = get_tile_from_coordinates(grid, row, col)
                 
@@ -182,18 +139,12 @@ def fill_grid(grid: list[list[Tile | None]], starting_row: int, starting_col: in
                         lowest_entropy = entropy
                     elif entropy == lowest_entropy:
                         list_of_low_entropy_coordinates.append(coordinate)
-
-                        
-
         
         if list_of_low_entropy_coordinates:
             coordinate_to_move_to = random.choice(list_of_low_entropy_coordinates)
             next_neighbor_coordinates.remove(coordinate_to_move_to)
-
             move_to_row, move_to_col = coordinate_to_move_to
-            #list_of_collapsed.append([move_to_row, move_to_col])
             grid[move_to_row][move_to_col].pick_tile()
-            #print_grid(grid, screen)
             next_neighbor_coordinates.extend(determine_next_neighbor_coordinates(grid, move_to_row, move_to_col))
         else:
             return
@@ -208,9 +159,9 @@ class Panels:
 
         self.display_surface = pygame.display.get_surface()
 
-    def update(self):
-        self.display_surface.blit(self.surface_left, (PADDING, PADDING*2)) # Purple in picture
-        self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2)) # light blue in picture
+    def draw(self):
+        self.display_surface.blit(self.surface_left, (PADDING, PADDING*2))
+        self.display_surface.blit(self.surface_right, (PADDING*2 + GRID_WIDTH, PADDING*2))
 
 def draw_grid_lines(screen : pygame.Surface):
     for col in range(NUM_OF_ROWS_COLS + 1):
@@ -220,11 +171,6 @@ def draw_grid_lines(screen : pygame.Surface):
     for row in range(NUM_OF_ROWS_COLS + 1):
         y = (row * PIXEL_DIM_OF_TILE) + PADDING * 2
         pygame.draw.line(screen, WHITE, (PADDING, y), (640 + PADDING, y), width=1)
-    #tile_size = GRID_WIDTH//3
-    #for row in range(0, GRID_WIDTH - 1, tile_size):
-     #   for col in range(0, GRID_HEIGHT - 1, tile_size):
-      #      rect = pygame.Rect(row, col, tile_size, tile_size)
-       #     pygame.draw.rect(screen, BLACK, rect, 2)
 
 class Button:
     def __init__(self, x:int, y:int, image: str):
@@ -233,7 +179,6 @@ class Button:
         self.rect.topleft = (x,y)
         self.clicked = False
         
-    
     def draw(self, screen: pygame.Surface):
         screen.blit(self.img, (self.rect.x, self.rect.y))
     
@@ -250,59 +195,47 @@ def set_speed(slider_value: int) -> int:
 
 def draw_text(screen, text, font, color, x, y):
     img = font.render(text, True, color)
-    text_rect = img.get_rect(center=(x, y)) # Buffer is the distance from the center of the window
+    text_rect = img.get_rect(center=(x, y))
     screen.blit(img, text_rect)
 
-def draw_right_panel(screen):
-    pass
-
 def main():
-    #num_of_rows = int(input("How many rows would you like?: "))
-    #num_of_cols = int(input("How many columns would you like?: "))
-    grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
-    #print_grid(grid)
-
-    starting_row = 2
-    starting_col = 2
-    #outline = pygame.draw.rect(screen, WHITE, (starting_row, starting_col, 64, 64), width = 2)
-    starting_tile = TileType.WATER
-    speed = 100
-
-    
-
-
     pygame.init()
     pygame.font.init()
-    label_font = pygame.font.Font("Juliette_handwritting-Regular.ttf", 45)
-    #label2_font = pygame.font.SysFont("Lucida Handwriting", 30)
 
+    # pygame info
+    label_font = pygame.font.Font("Juliette_handwritting-Regular.ttf", 45)
     pygame.display.set_caption("Wave Function Collapse")
     resolution = (SCREEN_WIDTH, SCREEN_HEIGHT)
     screen = pygame.display.set_mode(resolution)
     clock = pygame.time.Clock()
     fps = 24
+
+    # Algorithm info
+    grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
+    starting_row = 2
+    starting_col = 2
+    starting_tile = TileType.WATER
+    speed = 100
+    
+    # UI elements
     solve_button = Button(921, 530, "images/3-tiles/solve_button.png")
     reset_button = Button(921, 626, "images/3-tiles/reset_button.png")
     water_button = Button(847, 242, "images/3-tiles/water_tile.png")
     coast_button = Button(953, 242, "images/3-tiles/coastline_tile.png")
     grass_button = Button(1059, 242, "images/3-tiles/grass_tile.png")
-
     slider = Slider(screen, x=835, y=442, width=300, height=20, min=0, max=200, step=50)
-
     panels = Panels()
     
-
     running = True
+    # Game loop
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if solve_button.get_rectangle().collidepoint(event.pos):
-                    print("click")
                     solve_button.start_loop(grid, starting_row, starting_col, starting_tile, speed)
                 if reset_button.get_rectangle().collidepoint(event.pos):
-                    print("reset")
                     grid: list[list[Tile | None]] = [[Tile() for col in range(10)] for row in range(10)]
                 if water_button.get_rectangle().collidepoint(event.pos):
                     starting_tile = TileType.WATER
@@ -313,68 +246,47 @@ def main():
                 if grass_button.get_rectangle().collidepoint(event.pos):
                     starting_tile = TileType.GRASS
                     pygame.draw.rect(screen, BLACK, (1050, 200, 64, 64), width = 5)
-                #clicked = False
-                #pos = pygame.mouse.get_pos()
-                #if button.get_rectangle().collidepoint(pos): # hovering over
-                 #   if pygame.mouse.get_pressed()[0] and not clicked: # left mouse click. Middle is 1, and 2 is right
-                  #      clicked = True
-                   #     print("clicked")
-                    #    fill_grid(grid, 2, 2, TileType.WATER, screen)
-                    #if not pygame.mouse.get_pressed()[0]:
-                     #   clicked = False
-
 
         #backgrounds
         screen.fill(GRAY)
-        panels.update()
-        
+        panels.draw()
 
-        #draw
-        #draw_grid(screen)
-        #pygame.draw.rect(screen, WHITE, (starting_row + PADDING*2, starting_col + PADDING, 64, 64), width = 5)
+        # Left side
         print_grid(grid, screen)
         draw_grid_lines(screen)
-        #fill_grid(grid, 2, 2, TileType.WATER, screen)
+        # Grid highlight
+        pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5)
+
+        # Right side
         solve_button.draw(screen)
         reset_button.draw(screen)
         water_button.draw(screen)
         coast_button.draw(screen)
         grass_button.draw(screen)
-        #pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5)
+        draw_text(screen, "Pick first tile type", label_font, BLACK, 985, 185)
+        draw_text(screen, "Speed", label_font, BLACK, 985, 385)
+        draw_text(screen, "Pick first tile location", label_font, WHITE, 370, 60)
+        # Button highlight
         if starting_tile == TileType.WATER:
             pygame.draw.rect(screen, BLACK, (847, 242, 64, 64), width = 5)
         elif starting_tile == TileType.COAST:
             pygame.draw.rect(screen, BLACK, (953, 242, 64, 64), width = 5)
         elif starting_tile == TileType.GRASS:
             pygame.draw.rect(screen, BLACK, (1059, 242, 64, 64), width = 5)
-        pygame.draw.rect(screen, WHITE, (starting_row*PIXEL_DIM_OF_TILE + PADDING, starting_col*PIXEL_DIM_OF_TILE + PADDING*2, 64, 64), width = 5) #I'm not sure how this is working and why it's backward
-        draw_text(screen, "Pick first tile type", label_font, BLACK, 985, 185)
-        draw_text(screen, "Speed", label_font, BLACK, 985, 385)
-        draw_text(screen, "Pick first tile location", label_font, WHITE, 370, 60)
-
-
+        
+        # Updates
         pygame_widgets.update(pygame.event.get())
-        #pygame.display.update()
         speed = set_speed(slider.getValue())
-
 
         #get mouse pos and convert it to grid size
         pos = pygame.mouse.get_pos()
         x = (pos[1] - PADDING*2)//PIXEL_DIM_OF_TILE
         y = (pos[0] - PADDING)//PIXEL_DIM_OF_TILE
-        
-
-        #print([x,y])
-        
-        if PADDING < pos[0] < 640+PADDING and PADDING*2 < pos[1] < 640+ PADDING*2: # Keeps it within the space
+        # Keeps the mouse clicks within the left panel area
+        if PADDING < pos[0] < 640+PADDING and PADDING*2 < pos[1] < 640+ PADDING*2: 
             if pygame.mouse.get_pressed()[0]==1:
                 starting_col = x
                 starting_row = y
-        
-
-
-        
-
 
         #flip display
         pygame.display.flip()
