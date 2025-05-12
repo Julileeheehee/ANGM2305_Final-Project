@@ -103,16 +103,16 @@ def print_grid(grid: list[list[Tile | None]], screen):
 
 
     ##### This is ugly and def hardcoded
-    y = 1
-    for row in grid:
-        x = 1
-        for col in row:
-            if col.tile_type: # if it exists/not None
-                screen.blit(col.get_tile_image(), (x*64, y*64))
+    #y = 1
+    for row in range(len(grid)):
+        #x = 1
+        for col in range(len(grid[0])):
+            if grid[row][col].tile_type: # if it exists/not None
+                screen.blit(grid[row][col].get_tile_image(), (row*64 + PADDING, col*64 + PADDING*2))
             else:
-                screen.blit(null_state, (x*64, y*64))
-            x+=1
-        y+=1
+                screen.blit(null_state, (row*64 + PADDING, col*64 + PADDING*2))
+            #x+=1
+        #y+=1
         
 
 def determine_next_neighbor_coordinates(grid: list[list[Tile | None]], row: int, col: int):
@@ -211,16 +211,23 @@ class Panels:
 
 
 
-def draw_grid(screen : pygame.Surface):
-    tile_size = GRID_WIDTH//3
-    for row in range(0, GRID_WIDTH - 1, tile_size):
-        for col in range(0, GRID_HEIGHT - 1, tile_size):
-            rect = pygame.Rect(row, col, tile_size, tile_size)
-            pygame.draw.rect(screen, BLACK, rect, 2)
+def draw_grid_lines(screen : pygame.Surface):
+    for col in range(NUM_OF_ROWS_COLS + 1):
+        x = (col * PIXEL_DIM_OF_TILE) + PADDING
+        pygame.draw.line(screen, WHITE, (x,PADDING*2), (x, 640 + PADDING*2), width=1)
+    
+    for row in range(NUM_OF_ROWS_COLS + 1):
+        y = (row * PIXEL_DIM_OF_TILE) + PADDING * 2
+        pygame.draw.line(screen, WHITE, (PADDING, y), (640 + PADDING, y), width=1)
+    #tile_size = GRID_WIDTH//3
+    #for row in range(0, GRID_WIDTH - 1, tile_size):
+     #   for col in range(0, GRID_HEIGHT - 1, tile_size):
+      #      rect = pygame.Rect(row, col, tile_size, tile_size)
+       #     pygame.draw.rect(screen, BLACK, rect, 2)
 
 class Button:
     def __init__(self, x:int, y:int):
-        self.img = pygame.transform.scale(pygame.image.load("images/3-tiles/blank_tile.png"), (64*0.99, 64*0.99))
+        self.img = pygame.transform.scale(pygame.image.load("images/3-tiles/blank_tile.png"), (64, 64))
         self.rect = self.img.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
@@ -314,9 +321,18 @@ def main():
         #draw
         #draw_grid(screen)
         print_grid(grid, screen)
+        draw_grid_lines(screen)
         #fill_grid(grid, 2, 2, TileType.WATER, screen)
         start_button.draw(screen)
         reset_button.draw(screen)
+
+
+        #get mouse pos and convert it to grid size
+        pos = pygame.mouse.get_pos()
+        x = (pos[0] - PADDING)//PIXEL_DIM_OF_TILE
+        y = (pos[1] - PADDING*2)//PIXEL_DIM_OF_TILE
+        print([x,y])
+
         
 
 
